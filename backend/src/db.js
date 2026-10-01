@@ -87,6 +87,19 @@ export async function initDb() {
       FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
     )
   `);
+
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS inquiries (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      name VARCHAR(120) NOT NULL,
+      email VARCHAR(180) NOT NULL,
+      tour_interest VARCHAR(120) NOT NULL,
+      message TEXT NOT NULL,
+      status ENUM('new', 'contacted', 'closed') NOT NULL DEFAULT 'new',
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    )
+  `);
 }
 
 function parseJson(value, fallback) {
@@ -201,5 +214,20 @@ export function mapPackageBooking(row) {
       name: row.user_name,
       email: row.user_email
     } : undefined
+  };
+}
+
+export function mapInquiry(row) {
+  if (!row) return null;
+  return {
+    _id: String(row.id),
+    id: String(row.id),
+    name: row.name,
+    email: row.email,
+    tourInterest: row.tour_interest,
+    message: row.message,
+    status: row.status,
+    createdAt: row.created_at,
+    updatedAt: row.updated_at
   };
 }

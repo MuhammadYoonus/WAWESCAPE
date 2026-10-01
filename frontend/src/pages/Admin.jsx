@@ -7,11 +7,13 @@ export default function Admin() {
   const { user } = useAuth();
   const [bookings, setBookings] = useState([]);
   const [packageBookings, setPackageBookings] = useState([]);
+  const [inquiries, setInquiries] = useState([]);
 
   useEffect(() => {
     if (user?.role === "admin") {
       api.get("/bookings").then(res => setBookings(res.data));
       api.get("/package-bookings").then(res => setPackageBookings(res.data));
+      api.get("/inquiries").then(res => setInquiries(res.data));
     }
   }, [user]);
 
@@ -31,13 +33,19 @@ export default function Admin() {
     }
   }
 
+  async function updateInquiryStatus(id, status) {
+    await api.put(`/inquiries/${id}/status`, { status });
+    setInquiries(items => items.map(item => item._id === id ? {...item, status} : item));
+  }
+
   return <section className="container-page py-14">
     <p className="eyebrow">MANAGEMENT</p><h1 className="section-title">Admin dashboard</h1>
     <div className="grid md:grid-cols-3 gap-5 mt-8">
       <div className="card p-6"><p className="text-slate-500">Total bookings</p><p className="text-4xl font-black mt-2">{allBookings.length}</p></div>
       <div className="card p-6"><p className="text-slate-500">Pending</p><p className="text-4xl font-black mt-2">{allBookings.filter(b=>b.status==="pending").length}</p></div>
-      <div className="card p-6"><p className="text-slate-500">Confirmed</p><p className="text-4xl font-black mt-2">{allBookings.filter(b=>b.status==="confirmed").length}</p></div>
+      <div className="card p-6"><p className="text-slate-500">New inquiries</p><p className="text-4xl font-black mt-2">{inquiries.filter(i=>i.status==="new").length}</p></div>
     </div>
+    <h2 className="mt-10 text-2xl font-black">Booking details</h2>
     <div className="card overflow-x-auto mt-8">
       <table className="w-full text-sm">
         <thead><tr className="border-b text-left"><th className="p-4">Customer</th><th>Booking</th><th>Date</th><th>Guests</th><th>Status</th></tr></thead>
@@ -46,6 +54,19 @@ export default function Admin() {
           <td>{b.kind === "package" ? b.packageTitle : b.tour.title}<br /><span className="text-xs text-slate-500">{b.kind === "package" ? "Package booking" : "Tour booking"}</span></td>
           <td>{new Date(b.bookingDate).toLocaleDateString()}</td><td>{b.guests}</td>
           <td><select value={b.status} onChange={e=>updateStatus(b._id,e.target.value,b.kind)} className="!w-auto"><option>pending</option><option>confirmed</option><option>cancelled</option><option>completed</option></select></td>
+        </tr>)}</tbody>
+      </table>
+    </div>
+    <h2 className="mt-10 text-2xl font-black">Inquiry details</h2>
+    <div className="card overflow-x-auto mt-8">
+      <table className="w-full text-sm">
+        <thead><tr className="border-b text-left"><th className="p-4">Customer</th><th>Interest</th><th>Message</th><th>Received</th><th>Status</th></tr></thead>
+        <tbody>{inquiries.map(inquiry => <tr className="border-b align-top" key={inquiry._id}>
+          <td className="p-4"><b>{inquiry.name}</b><br /><span className="text-slate-500">{inquiry.email}</span></td>
+          <td>{inquiry.tourInterest}</td>
+          <td className="max-w-md pr-4">{inquiry.message}</td>
+          <td>{new Date(inquiry.createdAt).toLocaleDateString()}</td>
+          <td><select value={inquiry.status} onChange={e=>updateInquiryStatus(inquiry._id,e.target.value)} className="!w-auto"><option>new</option><option>contacted</option><option>closed</option></select></td>
         </tr>)}</tbody>
       </table>
     </div>
