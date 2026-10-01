@@ -83,7 +83,7 @@ export default function Packages() {
                     description: pkg.plan.join(" ")
                   }}
                 />
-                <Link to="/login" className="btn-primary">Book This Plan</Link>
+                <Link to={`/booking/${pkg.id}`} className="btn-primary">Book This Plan</Link>
                 <Link to="/destinations" className="btn-outline">View Destinations</Link>
               </div>
             </div>

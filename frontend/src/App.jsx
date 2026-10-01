@@ -6,6 +6,7 @@ import Home from "./pages/Home";
 import TourDetails from "./pages/TourDetails";
 import Destinations from "./pages/Destinations";
 import Packages from "./pages/Packages";
+import PackageBooking from "./pages/PackageBooking";
 import Favorites from "./pages/Favorites";
 import Feedback from "./pages/Feedback";
 import About from "./pages/About";
@@ -26,6 +27,7 @@ export default function App() {
           <Route path="/tours/:id" element={<TourDetails />} />
           <Route path="/destinations" element={<Destinations />} />
           <Route path="/packages" element={<Packages />} />
+          <Route path="/booking/:packageId" element={<PackageBooking />} />
           <Route path="/favorites" element={<Favorites />} />
           <Route path="/feedback" element={<Feedback />} />
           <Route path="/about" element={<About />} />

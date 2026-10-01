@@ -66,6 +66,27 @@ export async function initDb() {
       FOREIGN KEY (tour_id) REFERENCES tours(id) ON DELETE CASCADE
     )
   `);
+
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS package_bookings (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      user_id INT NOT NULL,
+      package_id VARCHAR(120) NOT NULL,
+      package_title VARCHAR(180) NOT NULL,
+      package_route VARCHAR(255) NOT NULL,
+      package_price VARCHAR(60) NOT NULL,
+      booking_date DATE NOT NULL,
+      guests INT NOT NULL,
+      contact_name VARCHAR(120) NOT NULL,
+      contact_email VARCHAR(180) NOT NULL,
+      contact_phone VARCHAR(40) NOT NULL,
+      special_requests TEXT,
+      status ENUM('pending', 'confirmed', 'cancelled', 'completed') NOT NULL DEFAULT 'pending',
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+      FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+    )
+  `);
 }
 
 function parseJson(value, fallback) {
@@ -154,4 +175,31 @@ export function mapBooking(row) {
   }
 
   return booking;
+}
+
+export function mapPackageBooking(row) {
+  if (!row) return null;
+  return {
+    _id: String(row.id),
+    id: String(row.id),
+    packageId: row.package_id,
+    packageTitle: row.package_title,
+    packageRoute: row.package_route,
+    packagePrice: row.package_price,
+    bookingDate: row.booking_date,
+    guests: Number(row.guests),
+    contactName: row.contact_name,
+    contactEmail: row.contact_email,
+    contactPhone: row.contact_phone,
+    specialRequests: row.special_requests || "",
+    status: row.status,
+    createdAt: row.created_at,
+    updatedAt: row.updated_at,
+    user: row.user_name ? {
+      _id: String(row.user_id),
+      id: String(row.user_id),
+      name: row.user_name,
+      email: row.user_email
+    } : undefined
+  };
 }

@@ -5,6 +5,7 @@ import dotenv from "dotenv";
 import authRoutes from "./routes/authRoutes.js";
 import tourRoutes from "./routes/tourRoutes.js";
 import bookingRoutes from "./routes/bookingRoutes.js";
+import packageBookingRoutes from "./routes/packageBookingRoutes.js";
 import { initDb } from "./db.js";
 
 dotenv.config();
@@ -35,6 +36,7 @@ app.get("/api/health", (req, res) => {
 app.use("/api/auth", authRoutes);
 app.use("/api/tours", tourRoutes);
 app.use("/api/bookings", bookingRoutes);
+app.use("/api/package-bookings", packageBookingRoutes);
 
 const PORT = process.env.PORT || 5001;
 
