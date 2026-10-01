@@ -16,10 +16,13 @@ const allowedOrigins = [
   "http://localhost:5173",
   "http://127.0.0.1:5173"
 ].filter(Boolean);
+const localFrontendPattern = /^http:\/\/(localhost|127\.0\.0\.1):\d+$/;
 
 app.use(cors({
   origin(origin, callback) {
-    if (!origin || allowedOrigins.includes(origin)) return callback(null, true);
+    if (!origin || allowedOrigins.includes(origin) || localFrontendPattern.test(origin)) {
+      return callback(null, true);
+    }
     return callback(new Error(`CORS blocked for origin: ${origin}`));
   }
 }));
@@ -33,7 +36,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/tours", tourRoutes);
 app.use("/api/bookings", bookingRoutes);
 
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 5001;
 
 initDb()
   .then(() => {
