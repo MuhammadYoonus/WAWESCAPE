@@ -1,8 +1,6 @@
 import dotenv from "dotenv";
-import mongoose from "mongoose";
 import bcrypt from "bcryptjs";
-import User from "./models/User.js";
-import Tour from "./models/Tour.js";
+import { initDb, pool } from "./db.js";
 
 dotenv.config();
 
@@ -54,86 +52,49 @@ const tours = [
     includes: ["Transport", "Guide", "Lunch"],
     excludes: ["Entry tickets"],
     featured: true
-  },
-  {
-    title: "Classic Sri Lanka Round Tour",
-    slug: "classic-sri-lanka-round-tour",
-    category: "round-tour",
-    location: "Colombo – Kandy – Ella – Yala – Galle",
-    duration: "8 Days / 7 Nights",
-    price: 145000,
-    maxGuests: 10,
-    image: "https://images.unsplash.com/photo-1586613830776-7f3f7c2f0d9f?auto=format&fit=crop&w=1200&q=80",
-    shortDescription: "An island-wide journey covering culture, mountains, wildlife and beaches.",
-    description: "A complete Sri Lankan journey designed for visitors who want to see several regions in one trip.",
-    itinerary: [
-      { day: "Day 1", title: "Colombo", activities: ["Airport pickup", "City tour", "Hotel check-in"] },
-      { day: "Day 2", title: "Kandy", activities: ["Temple of the Tooth", "Cultural show"] },
-      { day: "Day 3", title: "Nuwara Eliya", activities: ["Tea plantation", "Waterfalls"] },
-      { day: "Day 4", title: "Ella", activities: ["Scenic train journey", "Ella town"] },
-      { day: "Day 5", title: "Ella", activities: ["Little Adam's Peak", "Nine Arch Bridge"] },
-      { day: "Day 6", title: "Yala", activities: ["Wildlife safari"] },
-      { day: "Day 7", title: "Galle", activities: ["South coast", "Galle Fort"] },
-      { day: "Day 8", title: "Departure", activities: ["Transfer to airport"] }
-    ],
-    includes: ["Accommodation", "Transport", "Selected meals", "Guide"],
-    excludes: ["Flights", "Personal expenses"],
-    featured: true
-  },
-  {
-    title: "Bentota Turtle & River Adventure",
-    slug: "bentota-turtle-river",
-    category: "day-tour",
-    location: "Bentota",
-    duration: "1 Day",
-    price: 7500,
-    maxGuests: 10,
-    image: "https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=1200&q=80",
-    shortDescription: "Visit turtle conservation attractions and cruise through Bentota's waterways.",
-    description: "A family-friendly coastal experience featuring nature, waterways and a relaxed beach atmosphere.",
-    itinerary: [{ day: "Day 1", title: "Bentota", activities: ["Turtle conservation visit", "River safari", "Beach time"] }],
-    includes: ["Transport", "Guide", "River boat"],
-    excludes: ["Lunch", "Personal expenses"]
-  },
-  {
-    title: "Kandy – Ella Mountain Journey",
-    slug: "kandy-ella-mountain",
-    category: "multi-day",
-    location: "Kandy / Nuwara Eliya / Ella",
-    duration: "3 Days / 2 Nights",
-    price: 52000,
-    maxGuests: 8,
-    image: "https://images.unsplash.com/photo-1566552881560-0be862a7c445?auto=format&fit=crop&w=1200&q=80",
-    shortDescription: "A compact mountain escape through tea country and Ella.",
-    description: "Travel from cultural Kandy into the cool highlands and scenic Ella.",
-    itinerary: [
-      { day: "Day 1", title: "Kandy", activities: ["City tour", "Temple visit"] },
-      { day: "Day 2", title: "Tea Country", activities: ["Tea factory", "Train journey"] },
-      { day: "Day 3", title: "Ella", activities: ["Nine Arch Bridge", "Return transfer"] }
-    ],
-    includes: ["Transport", "2 nights accommodation", "Breakfast", "Guide"],
-    excludes: ["Train class upgrades", "Personal expenses"]
   }
 ];
 
 async function seed() {
-  await mongoose.connect(process.env.MONGO_URI);
-  await Tour.deleteMany({});
-  await Tour.insertMany(tours);
+  await initDb();
+  await pool.query("DELETE FROM bookings");
+  await pool.query("DELETE FROM tours");
 
-  const email = "admin@wavecape.lk";
-  const existing = await User.findOne({ email });
-  if (!existing) {
-    await User.create({
-      name: "WAWECAPE Admin",
-      email,
-      password: await bcrypt.hash("Admin123!", 10),
-      role: "admin"
-    });
+  for (const tour of tours) {
+    await pool.query(
+      `INSERT INTO tours
+      (title, slug, category, location, duration, price, max_guests, image, short_description, description, itinerary, includes, excludes, featured, active)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, true)`,
+      [
+        tour.title,
+        tour.slug,
+        tour.category,
+        tour.location,
+        tour.duration,
+        tour.price,
+        tour.maxGuests,
+        tour.image,
+        tour.shortDescription,
+        tour.description,
+        JSON.stringify(tour.itinerary),
+        JSON.stringify(tour.includes),
+        JSON.stringify(tour.excludes),
+        Boolean(tour.featured)
+      ]
+    );
   }
 
-  console.log("Database seeded successfully");
-  await mongoose.disconnect();
+  const email = "admin@wavecape.lk";
+  const [existing] = await pool.query("SELECT id FROM users WHERE email = ?", [email]);
+  if (!existing.length) {
+    await pool.query(
+      "INSERT INTO users (name, email, password, role) VALUES (?, ?, ?, ?)",
+      ["WAWECAPE Admin", email, await bcrypt.hash("Admin123!", 10), "admin"]
+    );
+  }
+
+  console.log("MySQL database seeded successfully");
+  await pool.end();
 }
 
 seed().catch(err => {
