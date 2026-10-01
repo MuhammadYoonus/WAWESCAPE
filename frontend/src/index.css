@@ -1,0 +1,62 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --sky-blue: #005F73;
+  --teal-ocean: #0A9396;
+  --summer-sun: #EE9B00;
+  --white-cloud: #FFF9F4;
+  --ink: #073B43;
+}
+
+body { @apply font-sans; background: var(--white-cloud); color: var(--ink); }
+.container-page { @apply max-w-7xl mx-auto px-5 md:px-8; }
+.nav-link { @apply transition; color: rgba(255, 249, 244, .86); }
+.nav-link:hover, .nav-link.active { color: var(--summer-sun); }
+.nav-action { @apply inline-flex items-center rounded-full px-4 py-2 text-xs font-black uppercase tracking-wide transition; border: 1px solid var(--summer-sun); color: var(--white-cloud); }
+.nav-action:hover { background: var(--summer-sun); color: var(--sky-blue); }
+.btn-primary { @apply inline-flex items-center rounded-xl px-5 py-3 text-white font-bold transition; background: var(--teal-ocean); }
+.btn-primary:hover { background: var(--sky-blue); }
+.btn-outline { @apply inline-flex items-center rounded-xl border px-4 py-2 font-semibold transition; border-color: rgba(0, 95, 115, .28); color: var(--sky-blue); }
+.btn-outline:hover { border-color: var(--teal-ocean); color: var(--teal-ocean); background: rgba(10, 147, 150, .08); }
+.btn-white { @apply inline-flex items-center rounded-xl px-5 py-3 font-bold transition; background: var(--white-cloud); color: var(--sky-blue); }
+.btn-white:hover { background: #fff2df; }
+.card { @apply rounded-2xl shadow-sm; background: rgba(255, 249, 244, .98); border: 1px solid rgba(0, 95, 115, .14); }
+.tour-card-effect { @apply overflow-hidden transition duration-300 ease-out; transform: translateY(0) scale(1); }
+.tour-card-effect:hover { transform: translateY(-10px) scale(1.025); box-shadow: 0 24px 55px rgba(0, 95, 115, .2); border-color: rgba(238, 155, 0, .55); }
+.tour-card-effect img { @apply transition duration-500 ease-out; }
+.tour-card-effect:hover img { transform: scale(1.08); }
+.badge { @apply inline-flex rounded-full px-3 py-1 text-xs font-bold uppercase tracking-wide; background: rgba(10, 147, 150, .12); color: var(--sky-blue); }
+.filter { @apply rounded-xl border px-4 py-2 text-sm font-semibold; border-color: rgba(0, 95, 115, .2); color: var(--sky-blue); }
+.filter:hover { border-color: var(--teal-ocean); }
+.filter-active { @apply rounded-xl text-white px-4 py-2 text-sm font-semibold; background: var(--teal-ocean); }
+.favorite-button { @apply inline-flex items-center gap-2 rounded-xl border px-4 py-3 text-sm font-black transition; border-color: rgba(238, 155, 0, .35); background: rgba(238, 155, 0, .12); color: #9a6500; }
+.favorite-button:hover, .favorite-button-active { background: var(--summer-sun); border-color: var(--summer-sun); color: var(--sky-blue); }
+.eyebrow { @apply text-xs font-black tracking-[0.2em]; color: var(--teal-ocean); }
+.section-title { @apply text-4xl md:text-5xl font-black tracking-tight; }
+label { @apply block text-sm font-semibold; color: var(--sky-blue); }
+input, textarea, select { @apply mt-2 w-full rounded-xl border px-4 py-3 outline-none focus:ring-2; background: white; border-color: rgba(0, 95, 115, .22); }
+input:focus, textarea:focus, select:focus { border-color: var(--teal-ocean); --tw-ring-color: rgba(10, 147, 150, .18); }
+
+.hero {
+  background-position: center;
+  background-size: cover;
+}
+
+.page-hero {
+  background-position: center;
+  background-size: cover;
+}
+
+.bg-slate-950, .bg-emerald-900 { background-color: var(--sky-blue) !important; }
+.bg-slate-950\/95 { background-color: rgba(0, 95, 115, .95) !important; }
+.bg-slate-50, .bg-white { background-color: var(--white-cloud) !important; }
+.bg-emerald-700 { background-color: var(--teal-ocean) !important; }
+.text-emerald-700, .text-emerald-300 { color: var(--teal-ocean) !important; }
+.text-emerald-200, .text-amber-500 { color: var(--summer-sun) !important; }
+.border-slate-800 { border-color: rgba(255, 249, 244, .16) !important; }
+.text-slate-500, .text-slate-600, .text-slate-700 { color: rgba(7, 59, 67, .72) !important; }
+.text-slate-400, .text-slate-300, .text-slate-100, .text-slate-200 { color: rgba(255, 249, 244, .72) !important; }
