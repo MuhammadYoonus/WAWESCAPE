@@ -21,11 +21,11 @@ export default function Footer() {
         </div>
         <div>
           <h4 className="font-bold">Contact</h4>
-          <p className="mt-3 text-slate-400">hello@wavecape.lk<br />+94 77 123 4567<br />Sri Lanka</p>
+          <p className="mt-3 text-slate-400">hello@wavecape.lk<br />+94 76 284 0207<br />Sri Lanka</p>
         </div>
       </div>
       <div className="border-t border-slate-800 text-center py-5 text-sm text-slate-500">
-        © 2026 WAWECAPE. University project prototype.
+        © 2026 WAWECAPE. Explore Sri Lanka.
       </div>
     </footer>
   );
