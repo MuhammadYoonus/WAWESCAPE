@@ -42,7 +42,50 @@ export const destinations = [
     image: destinationImages.galle,
     summary: "Fort streets, boutique cafes, colonial walls and easy beach connections.",
     bestFor: ["Fort", "Food", "Walks"]
-  }
+  },
+  {
+    name: "Udawalawe National Park",
+    region: "Wildlife Coast",
+    image: destinationImages.udawalawe,
+    summary: "To see elephants family, monkeys, water buffalo, lizards, and crocodiles",
+    bestFor: ["Jeep tour", "Nature", "Views"]
+  },
+  {
+    name: "Dambulla Cave Temples",
+    region: "Cultural Triangle",
+    image: destinationImages.dambullacurv,
+    summary: "Religious and historical significance, beautiful and unique.",
+    bestFor: ["Temples", "Religious", "Historical"]
+  },
+  {
+    name: "Weligama",
+    region: "South Coast",
+    image: destinationImages.weligamasurf,
+    summary: "Palm-fringed beaches, surfing, seafood dinners and relaxed coastal stays.",
+    bestFor: ["Beach", "Surfing", "Sunsets"]
+  },
+  {
+    name: "Liptons Seat",
+    region: "Hill Country",
+    image: destinationImages.liptonseat,
+    summary: "Tea estates, Viewpoint up above all of the tea fields.",
+    bestFor: ["Sunrise", "Hiking", "Views"]
+  },
+  {
+    name: "Pidurangala Rock",
+    region: "Hill Country",
+    image: destinationImages.pidurangala,
+    summary: "Rock sits across from Sigiriya Rock Fortress, Best time to visit is around sunset.",
+    bestFor: ["Sunrise", "Hiking", "Views"]
+  },
+  {
+    name: "Arugambay",
+    region: "East Coast",
+    image: destinationImages.arugambay,
+    summary: "Relaxed beach town with excellent surfing conditions and fresh seafood.",
+    bestFor: ["Surfing", "SeaFood", "Views"]
+  },
+
 ];
 
 export const packages = [

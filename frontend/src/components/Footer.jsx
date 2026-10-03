@@ -13,7 +13,7 @@ export default function Footer() {
           <h4 className="font-bold">Explore</h4>
           <div className="mt-3 grid gap-2 text-slate-400">
             <Link to="/destinations" className="hover:text-emerald-300">Destinations</Link>
-            <Link to="/packages" className="hover:text-emerald-300">1, 2 and 3 day packages</Link>
+            <Link to="/packages" className="hover:text-emerald-300">Tour packages</Link>
             <Link to="/favorites" className="hover:text-emerald-300">Favorite tours</Link>
             <Link to="/feedback" className="hover:text-emerald-300">Customer feedback</Link>
             <Link to="/about" className="hover:text-emerald-300">About WAWECAPE</Link>

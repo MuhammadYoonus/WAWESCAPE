@@ -15,7 +15,15 @@ import turtleBeach from "./Turtle beach.jpeg";
 import udawalawaSafari from "./Udawalawa Safari.jpg";
 import weligamaBeach from "./Weligama beach.jpeg";
 import weligamaBeachSunset from "./WeligamaBeach sunset.jpeg";
-import whaleWatching from "./whalwtching.png";
+import whaleWatching from "./whalwtching.png";;
+import Yala from "./Yala.png";
+import sigiriya from "./Sigirya.png";
+import DaladhaMaligawa from "./Dhaladha maligaawa kandy.jpg";
+import pidurangala from "./Pidurangalarock.png";
+import arugambay from "./Arugambay.jpg";
+import liptonseat from "./Liptonseat.jpg";
+import dambullacurv from "./DambullaCurv.jpg";
+import weligamasurf from "./Weligamasurf.jpeg";
 
 export const brandImages = {
   headerLogo,
@@ -37,17 +45,23 @@ export const heroImages = {
 export const destinationImages = {
   ella,
   mirissa: mirissaBeach,
-  sigiriya: nineArchHero,
+  sigiriya: sigiriya,
   yala: yalaHero,
-  kandy: nineArchHero,
-  galle: galleFort
+  kandy: DaladhaMaligawa,
+  galle: galleFort,
+  udawalawe: udawalawaSafari,
+  pidurangala: pidurangala,
+  arugambay: arugambay,
+  liptonseat,
+  dambullacurv,
+  weligamasurf
 };
 
 export const packageImages = {
   coastalDay: mirissaBeach,
   kandyDay: nineArchHero,
   ellaTwo: ella,
-  wildTwo: yalaHero,
+  wildTwo: Yala,
   classicThree: nineArchHero,
   beachThree: beachHero
 };

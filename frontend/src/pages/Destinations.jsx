@@ -37,7 +37,7 @@ export default function Destinations() {
       <div className="mt-12 rounded-2xl bg-emerald-900 px-6 py-8 text-white md:flex md:items-center md:justify-between">
         <div>
           <p className="text-sm font-bold text-emerald-200">Need a ready tour package?</p>
-          <h2 className="mt-2 text-3xl font-black">Match destinations with 1, 2 or 3 day tour plans.</h2>
+          <h2 className="mt-2 text-3xl font-black">Match destinations with tour plans.</h2>
         </div>
         <Link to="/packages" className="btn-white mt-6 md:mt-0">View Packages</Link>
       </div>
