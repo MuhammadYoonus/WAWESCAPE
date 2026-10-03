@@ -7,6 +7,7 @@ import tourRoutes from "./routes/tourRoutes.js";
 import bookingRoutes from "./routes/bookingRoutes.js";
 import packageBookingRoutes from "./routes/packageBookingRoutes.js";
 import inquiryRoutes from "./routes/inquiryRoutes.js";
+import feedbackRoutes from "./routes/feedbackRoutes.js";
 import { initDb } from "./db.js";
 
 dotenv.config();
@@ -39,6 +40,7 @@ app.use("/api/tours", tourRoutes);
 app.use("/api/bookings", bookingRoutes);
 app.use("/api/package-bookings", packageBookingRoutes);
 app.use("/api/inquiries", inquiryRoutes);
+app.use("/api/feedback", feedbackRoutes);
 
 const PORT = process.env.PORT || 5001;
 

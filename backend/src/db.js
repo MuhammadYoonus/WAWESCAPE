@@ -100,6 +100,20 @@ export async function initDb() {
       updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
     )
   `);
+
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS feedback (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      name VARCHAR(120) NOT NULL,
+      email VARCHAR(180),
+      trip VARCHAR(180) NOT NULL,
+      rating INT NOT NULL,
+      message TEXT NOT NULL,
+      status ENUM('new', 'reviewed', 'hidden') NOT NULL DEFAULT 'new',
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    )
+  `);
 }
 
 function parseJson(value, fallback) {
@@ -226,6 +240,22 @@ export function mapInquiry(row) {
     email: row.email,
     tourInterest: row.tour_interest,
     message: row.message,
+    status: row.status,
+    createdAt: row.created_at,
+    updatedAt: row.updated_at
+  };
+}
+
+export function mapFeedback(row) {
+  if (!row) return null;
+  return {
+    _id: String(row.id),
+    id: String(row.id),
+    name: row.name,
+    email: row.email || "",
+    trip: row.trip,
+    rating: Number(row.rating),
+    text: row.message,
     status: row.status,
     createdAt: row.created_at,
     updatedAt: row.updated_at

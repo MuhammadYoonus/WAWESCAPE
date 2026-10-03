@@ -8,12 +8,14 @@ export default function Admin() {
   const [bookings, setBookings] = useState([]);
   const [packageBookings, setPackageBookings] = useState([]);
   const [inquiries, setInquiries] = useState([]);
+  const [feedbackItems, setFeedbackItems] = useState([]);
 
   useEffect(() => {
     if (user?.role === "admin") {
       api.get("/bookings").then(res => setBookings(res.data));
       api.get("/package-bookings").then(res => setPackageBookings(res.data));
       api.get("/inquiries").then(res => setInquiries(res.data));
+      api.get("/feedback?admin=true").then(res => setFeedbackItems(res.data));
     }
   }, [user]);
 
@@ -38,12 +40,18 @@ export default function Admin() {
     setInquiries(items => items.map(item => item._id === id ? {...item, status} : item));
   }
 
+  async function updateFeedbackStatus(id, status) {
+    await api.put(`/feedback/${id}/status`, { status });
+    setFeedbackItems(items => items.map(item => item._id === id ? {...item, status} : item));
+  }
+
   return <section className="container-page py-14">
     <p className="eyebrow">MANAGEMENT</p><h1 className="section-title">Admin dashboard</h1>
-    <div className="grid md:grid-cols-3 gap-5 mt-8">
+    <div className="grid md:grid-cols-4 gap-5 mt-8">
       <div className="card p-6"><p className="text-slate-500">Total bookings</p><p className="text-4xl font-black mt-2">{allBookings.length}</p></div>
       <div className="card p-6"><p className="text-slate-500">Pending</p><p className="text-4xl font-black mt-2">{allBookings.filter(b=>b.status==="pending").length}</p></div>
       <div className="card p-6"><p className="text-slate-500">New inquiries</p><p className="text-4xl font-black mt-2">{inquiries.filter(i=>i.status==="new").length}</p></div>
+      <div className="card p-6"><p className="text-slate-500">Feedback</p><p className="text-4xl font-black mt-2">{feedbackItems.length}</p></div>
     </div>
     <h2 className="mt-10 text-2xl font-black">Booking details</h2>
     <div className="card overflow-x-auto mt-8">
@@ -67,6 +75,20 @@ export default function Admin() {
           <td className="max-w-md pr-4">{inquiry.message}</td>
           <td>{new Date(inquiry.createdAt).toLocaleDateString()}</td>
           <td><select value={inquiry.status} onChange={e=>updateInquiryStatus(inquiry._id,e.target.value)} className="!w-auto"><option>new</option><option>contacted</option><option>closed</option></select></td>
+        </tr>)}</tbody>
+      </table>
+    </div>
+    <h2 className="mt-10 text-2xl font-black">Feedback details</h2>
+    <div className="card overflow-x-auto mt-8">
+      <table className="w-full text-sm">
+        <thead><tr className="border-b text-left"><th className="p-4">Customer</th><th>Trip</th><th>Rating</th><th>Feedback</th><th>Received</th><th>Status</th></tr></thead>
+        <tbody>{feedbackItems.map(item => <tr className="border-b align-top" key={item._id}>
+          <td className="p-4"><b>{item.name}</b><br /><span className="text-slate-500">{item.email || "No email"}</span></td>
+          <td>{item.trip}</td>
+          <td><span className="text-amber-500">{"★".repeat(item.rating)}</span></td>
+          <td className="max-w-md pr-4">{item.text}</td>
+          <td>{new Date(item.createdAt).toLocaleDateString()}</td>
+          <td><select value={item.status} onChange={e=>updateFeedbackStatus(item._id,e.target.value)} className="!w-auto"><option>new</option><option>reviewed</option><option>hidden</option></select></td>
         </tr>)}</tbody>
       </table>
     </div>
