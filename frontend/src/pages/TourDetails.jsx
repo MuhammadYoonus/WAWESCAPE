@@ -8,7 +8,15 @@ export default function TourDetails() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [tour, setTour] = useState(null);
-  const [form, setForm] = useState({ bookingDate: "", guests: 1, contactPhone: "", specialRequests: "" });
+  const [form, setForm] = useState({
+    bookingDate: "",
+    adults: 1,
+    children: 0,
+    infants: 0,
+    pickupLocation: "",
+    contactPhone: "",
+    specialRequests: ""
+  });
   const [message, setMessage] = useState("");
 
   useEffect(() => {
@@ -23,11 +31,14 @@ export default function TourDetails() {
     try {
       await api.post("/bookings", { ...form, tourId: tour._id });
       setMessage("Booking request submitted successfully!");
-      setForm({ bookingDate: "", guests: 1, contactPhone: "", specialRequests: "" });
+      setForm({ bookingDate: "", adults: 1, children: 0, infants: 0, pickupLocation: "", contactPhone: "", specialRequests: "" });
     } catch (error) {
       setMessage(error.response?.data?.message || "Booking failed");
     }
   }
+
+  const totalGuests = Number(form.adults || 0) + Number(form.children || 0) + Number(form.infants || 0);
+  const estimatedTotal = tour.price * (Number(form.adults || 0) + Number(form.children || 0) * 0.75);
 
   return (
     <section className="container-page py-10">
@@ -56,9 +67,17 @@ export default function TourDetails() {
           <p className="text-sm text-slate-500">per guest</p>
           <form onSubmit={book} className="mt-6 space-y-4">
             <label>Travel date<input required type="date" value={form.bookingDate} onChange={e => setForm({...form, bookingDate: e.target.value})} /></label>
-            <label>Guests<input required type="number" min="1" max={tour.maxGuests} value={form.guests} onChange={e => setForm({...form, guests: Number(e.target.value)})} /></label>
+            <label>Exact pickup location<input required value={form.pickupLocation} onChange={e => setForm({...form, pickupLocation: e.target.value})} placeholder="Hotel name, address, or landmark" /></label>
+            <div className="grid grid-cols-3 gap-3">
+              <label>Adults<input required type="number" min="1" max={tour.maxGuests} value={form.adults} onChange={e => setForm({...form, adults: Number(e.target.value)})} /></label>
+              <label>Children 4-12<input required type="number" min="0" max={tour.maxGuests} value={form.children} onChange={e => setForm({...form, children: Number(e.target.value)})} /></label>
+              <label>Below 3<input required type="number" min="0" max={tour.maxGuests} value={form.infants} onChange={e => setForm({...form, infants: Number(e.target.value)})} /></label>
+            </div>
             <label>Phone<input required value={form.contactPhone} onChange={e => setForm({...form, contactPhone: e.target.value})} placeholder="+94..." /></label>
             <label>Special requests<textarea value={form.specialRequests} onChange={e => setForm({...form, specialRequests: e.target.value})} rows="3" /></label>
+            <p className="rounded-xl bg-slate-50 p-3 text-sm font-semibold text-slate-700">
+              Guests: {totalGuests} · Estimated total: <b>LKR {estimatedTotal.toLocaleString()}</b>
+            </p>
             {message && <p className="text-sm font-semibold text-emerald-700">{message}</p>}
             <button className="btn-primary w-full justify-center">Request Booking</button>
           </form>

@@ -12,25 +12,34 @@ router.post("/", protect, async (req, res) => {
       packageRoute,
       packagePrice,
       bookingDate,
-      guests,
+      adults,
+      children,
+      infants,
+      pickupLocation,
       contactName,
       contactEmail,
       contactPhone,
       specialRequests
     } = req.body;
+    const adultCount = Number(adults || 0);
+    const childCount = Number(children || 0);
+    const infantCount = Number(infants || 0);
+    const guestCount = adultCount + childCount + infantCount;
+    const basePrice = priceFromText(packagePrice);
+    const chargeableGuests = adultCount + childCount * 0.75;
 
-    if (!packageId || !packageTitle || !bookingDate || !guests || !contactName || !contactEmail || !contactPhone) {
+    if (!packageId || !packageTitle || !bookingDate || !contactName || !contactEmail || !contactPhone || !pickupLocation) {
       return res.status(400).json({ message: "Please complete all required booking details" });
     }
 
-    if (Number(guests) < 1) {
-      return res.status(400).json({ message: "Guests must be at least 1" });
+    if (adultCount < 1) {
+      return res.status(400).json({ message: "At least one adult is required for a booking" });
     }
 
     const [result] = await pool.query(
       `INSERT INTO package_bookings
-      (user_id, package_id, package_title, package_route, package_price, booking_date, guests, contact_name, contact_email, contact_phone, special_requests)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      (user_id, package_id, package_title, package_route, package_price, booking_date, guests, contact_name, contact_email, contact_phone, special_requests, pickup_location, adults, children, infants, total_amount)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [
         req.user.id,
         packageId,
@@ -38,11 +47,16 @@ router.post("/", protect, async (req, res) => {
         packageRoute || "",
         packagePrice || "",
         bookingDate,
-        Number(guests),
+        guestCount,
         contactName,
         contactEmail,
         contactPhone,
-        specialRequests || ""
+        specialRequests || "",
+        pickupLocation,
+        adultCount,
+        childCount,
+        infantCount,
+        basePrice ? basePrice * chargeableGuests : null
       ]
     );
 
@@ -82,9 +96,14 @@ function packageBookingJoinQuery(suffix = "") {
       u.name AS user_name,
       u.email AS user_email
     FROM package_bookings pb
-    JOIN users u ON pb.user_id = u.id
+    LEFT JOIN users u ON pb.user_id = u.id
     ${suffix}
   `;
+}
+
+function priceFromText(value = "") {
+  const number = String(value).replace(/[^\d.]/g, "");
+  return number ? Number(number) : 0;
 }
 
 export default router;

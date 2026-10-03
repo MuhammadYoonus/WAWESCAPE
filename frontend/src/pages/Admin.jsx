@@ -45,6 +45,22 @@ export default function Admin() {
     setFeedbackItems(items => items.map(item => item._id === id ? {...item, status} : item));
   }
 
+  function customerName(booking) {
+    return booking.contactName || booking.user?.name || "Customer";
+  }
+
+  function customerEmail(booking) {
+    return booking.contactEmail || booking.user?.email || "No email";
+  }
+
+  function bookingTitle(booking) {
+    return booking.kind === "package" ? booking.packageTitle : booking.tour?.title || "Tour booking";
+  }
+
+  function guestSummary(booking) {
+    return `${booking.adults || 0} adults · ${booking.children || 0} children 4-12 · ${booking.infants || 0} below 3`;
+  }
+
   return <section className="container-page py-14">
     <p className="eyebrow">MANAGEMENT</p><h1 className="section-title">Admin dashboard</h1>
     <div className="grid md:grid-cols-4 gap-5 mt-8">
@@ -56,11 +72,14 @@ export default function Admin() {
     <h2 className="mt-10 text-2xl font-black">Booking details</h2>
     <div className="card overflow-x-auto mt-8">
       <table className="w-full text-sm">
-        <thead><tr className="border-b text-left"><th className="p-4">Customer</th><th>Booking</th><th>Date</th><th>Guests</th><th>Status</th></tr></thead>
+        <thead><tr className="border-b text-left"><th className="p-4">Customer</th><th>Booking</th><th>Date</th><th>Guests</th><th>Pickup</th><th>Contact</th><th>Status</th></tr></thead>
         <tbody>{allBookings.map(b => <tr className="border-b" key={`${b.kind}-${b._id}`}>
-          <td className="p-4"><b>{b.user.name}</b><br /><span className="text-slate-500">{b.user.email}</span></td>
-          <td>{b.kind === "package" ? b.packageTitle : b.tour.title}<br /><span className="text-xs text-slate-500">{b.kind === "package" ? "Package booking" : "Tour booking"}</span></td>
-          <td>{new Date(b.bookingDate).toLocaleDateString()}</td><td>{b.guests}</td>
+          <td className="p-4"><b>{customerName(b)}</b><br /><span className="text-slate-500">{customerEmail(b)}</span></td>
+          <td>{bookingTitle(b)}<br /><span className="text-xs text-slate-500">{b.kind === "package" ? "Package booking" : "Tour booking"}</span></td>
+          <td>{new Date(b.bookingDate).toLocaleDateString()}</td>
+          <td>{b.guests}<br /><span className="text-xs text-slate-500">{guestSummary(b)}</span></td>
+          <td>{b.pickupLocation || "No pickup location"}</td>
+          <td>{b.contactPhone || "No phone"}<br /><span className="text-xs text-slate-500">{b.totalPrice ? `LKR ${b.totalPrice.toLocaleString()}` : b.packagePrice}</span></td>
           <td><select value={b.status} onChange={e=>updateStatus(b._id,e.target.value,b.kind)} className="!w-auto"><option>pending</option><option>confirmed</option><option>cancelled</option><option>completed</option></select></td>
         </tr>)}</tbody>
       </table>

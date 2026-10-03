@@ -6,30 +6,53 @@ const router = express.Router();
 
 router.post("/", protect, async (req, res) => {
   try {
-    const { tourId, bookingDate, guests, contactPhone, specialRequests } = req.body;
+    const { tourId, bookingDate, adults, children, infants, pickupLocation, contactPhone, specialRequests } = req.body;
+    const adultCount = Number(adults || 0);
+    const childCount = Number(children || 0);
+    const infantCount = Number(infants || 0);
+    const guestCount = adultCount + childCount + infantCount;
+
     const [tourRows] = await pool.query("SELECT * FROM tours WHERE id = ?", [tourId]);
     const tour = mapTour(tourRows[0]);
     if (!tour || !tour.active) return res.status(404).json({ message: "Tour not available" });
-    if (guests < 1 || guests > tour.maxGuests) {
+    if (adultCount < 1) {
+      return res.status(400).json({ message: "At least one adult is required for a booking" });
+    }
+    if (guestCount < 1 || guestCount > tour.maxGuests) {
       return res.status(400).json({ message: `Guests must be between 1 and ${tour.maxGuests}` });
     }
 
+    const chargeableGuests = adultCount + childCount * 0.75;
     const [result] = await pool.query(
       `INSERT INTO bookings
-      (user_id, tour_id, booking_date, guests, total_price, contact_phone, special_requests)
-      VALUES (?, ?, ?, ?, ?, ?, ?)`,
-      [req.user.id, tour._id, bookingDate, guests, tour.price * guests, contactPhone, specialRequests || ""]
+      (trip_id, customer_name, email, phone, travelers, travel_date, total_amount, status, pickup_location, adults, children, infants)
+      VALUES (?, ?, ?, ?, ?, ?, ?, 'pending', ?, ?, ?, ?)`,
+      [
+        tour._id,
+        req.user.name,
+        req.user.email,
+        contactPhone,
+        guestCount,
+        bookingDate,
+        tour.price * chargeableGuests,
+        pickupLocation,
+        adultCount,
+        childCount,
+        infantCount
+      ]
     );
 
     const [rows] = await pool.query(bookingJoinQuery("WHERE b.id = ?"), [result.insertId]);
-    res.status(201).json(mapBooking(rows[0]));
+    const booking = mapBooking(rows[0]);
+    booking.specialRequests = specialRequests || "";
+    res.status(201).json(booking);
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
 });
 
 router.get("/mine", protect, async (req, res) => {
-  const [rows] = await pool.query(bookingJoinQuery("WHERE b.user_id = ? ORDER BY b.created_at DESC"), [req.user.id]);
+  const [rows] = await pool.query(bookingJoinQuery("WHERE b.email = ? ORDER BY b.created_at DESC"), [req.user.email]);
   res.json(rows.map(mapBooking));
 });
 
@@ -50,18 +73,14 @@ function bookingJoinQuery(suffix = "") {
   return `
     SELECT
       b.*,
-      t.id AS tour_id,
-      t.title AS tour_title,
-      t.location AS tour_location,
-      t.duration AS tour_duration,
-      t.image AS tour_image,
-      t.price AS tour_price,
-      u.id AS user_id,
-      u.name AS user_name,
-      u.email AS user_email
+      tr.id AS trip_id,
+      COALESCE(tr.title, CONCAT('Trip #', b.trip_id)) AS trip_title,
+      tr.location AS trip_location,
+      tr.duration AS trip_duration,
+      tr.image_url AS trip_image,
+      tr.price AS trip_price
     FROM bookings b
-    JOIN tours t ON b.tour_id = t.id
-    JOIN users u ON b.user_id = u.id
+    LEFT JOIN trips tr ON b.trip_id = tr.id
     ${suffix}
   `;
 }

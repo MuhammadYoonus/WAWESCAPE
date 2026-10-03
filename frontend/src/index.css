@@ -58,7 +58,8 @@ input:focus, textarea:focus, select:focus { border-color: var(--teal-ocean); --t
 .text-emerald-700, .text-emerald-300 { color: var(--teal-ocean) !important; }
 .text-emerald-200, .text-amber-500 { color: var(--summer-sun) !important; }
 .border-slate-800 { border-color: rgba(255, 249, 244, .16) !important; }
-.text-slate-700 { color: rgba(201, 248, 255, 0.72) !important; }
+.text-slate-700 { color: rgba(38, 130, 145, 0.72) !important; }
 .text-slate-400, .text-slate-300, .text-slate-100, .text-slate-200 { color: rgba(255, 249, 244, .72) !important; }
-.text-slate-600{ color: rgba(23, 137, 154, 0.86) !important; }
-.text-slate-500{ color: rgba(45, 133, 147, 0.72) !important; }
+.text-slate-600{ color: rgba(62, 135, 147, 0.86) !important; }
+.text-slate-500{ color: rgba(62, 133, 144, 0.72) !important; }
+.text-slate-550{ color: rgba(160, 230, 241, 0.72) !important; }

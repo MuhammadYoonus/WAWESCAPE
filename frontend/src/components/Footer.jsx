@@ -24,7 +24,7 @@ export default function Footer() {
           <p className="mt-3 text-slate-400">hello@wavecape.lk<br />+94 76 284 0207<br />Sri Lanka</p>
         </div>
       </div>
-      <div className="border-t border-slate-800 text-center py-5 text-sm text-slate-500">
+      <div className="border-t border-slate-800 text-center py-5 text-sm text-slate-550">
         © 2026 WAWECAPE. Explore Sri Lanka.
       </div>
     </footer>

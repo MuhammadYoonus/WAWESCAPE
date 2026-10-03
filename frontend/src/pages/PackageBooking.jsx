@@ -15,7 +15,10 @@ export default function PackageBooking() {
   );
   const [form, setForm] = useState({
     bookingDate: "",
-    guests: 1,
+    adults: 1,
+    children: 0,
+    infants: 0,
+    pickupLocation: "",
     contactName: user?.name || "",
     contactEmail: user?.email || "",
     contactPhone: "",
@@ -51,11 +54,15 @@ export default function PackageBooking() {
         ...form
       });
       setMessage("Booking request submitted successfully. WAWESCAPE will contact you soon.");
-      setForm(current => ({ ...current, bookingDate: "", guests: 1, contactPhone: "", specialRequests: "" }));
+      setForm(current => ({ ...current, bookingDate: "", adults: 1, children: 0, infants: 0, pickupLocation: "", contactPhone: "", specialRequests: "" }));
     } catch (err) {
       setError(err.response?.data?.message || "Booking request failed");
     }
   }
+
+  const basePrice = Number(tourPackage.price.replace(/[^\d.]/g, "")) || 0;
+  const chargeableGuests = Number(form.adults || 0) + Number(form.children || 0) * 0.75;
+  const estimatedTotal = basePrice * chargeableGuests;
 
   return (
     <>
@@ -73,9 +80,15 @@ export default function PackageBooking() {
             <label>Email<input required type="email" value={form.contactEmail} onChange={e => setForm({...form, contactEmail: e.target.value})} /></label>
             <label>Phone number<input required value={form.contactPhone} onChange={e => setForm({...form, contactPhone: e.target.value})} placeholder="+94..." /></label>
             <label>Travel date<input required type="date" value={form.bookingDate} onChange={e => setForm({...form, bookingDate: e.target.value})} /></label>
-            <label>Guests<input required type="number" min="1" value={form.guests} onChange={e => setForm({...form, guests: Number(e.target.value)})} /></label>
-            <label className="md:col-span-2">Special requests<textarea rows="5" value={form.specialRequests} onChange={e => setForm({...form, specialRequests: e.target.value})} placeholder="Pickup location, preferred time, children, dietary needs..." /></label>
+            <label className="md:col-span-2">Exact pickup location<input required value={form.pickupLocation} onChange={e => setForm({...form, pickupLocation: e.target.value})} placeholder="Hotel name, address, or landmark" /></label>
+            <label>Adults<input required type="number" min="1" value={form.adults} onChange={e => setForm({...form, adults: Number(e.target.value)})} /></label>
+            <label>Children age 4-12<input required type="number" min="0" value={form.children} onChange={e => setForm({...form, children: Number(e.target.value)})} /></label>
+            <label>Children below 3<input required type="number" min="0" value={form.infants} onChange={e => setForm({...form, infants: Number(e.target.value)})} /></label>
+            <label className="md:col-span-2">Special requests<textarea rows="5" value={form.specialRequests} onChange={e => setForm({...form, specialRequests: e.target.value})} placeholder="Preferred time, dietary needs, or anything our team should know..." /></label>
           </div>
+          <p className="mt-5 rounded-xl bg-slate-50 p-4 text-sm font-semibold text-slate-700">
+            Estimated total: <b>LKR {estimatedTotal.toLocaleString()}</b> · Children below 3 travel free
+          </p>
           {message && <p className="mt-5 rounded-xl bg-teal-50 p-4 text-sm font-bold text-emerald-700">{message}</p>}
           {error && <p className="mt-5 rounded-xl bg-red-50 p-4 text-sm font-bold text-red-600">{error}</p>}
           <button className="btn-primary mt-7 w-full justify-center">Submit Booking Request</button>

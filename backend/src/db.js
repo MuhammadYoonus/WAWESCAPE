@@ -114,6 +114,29 @@ export async function initDb() {
       updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
     )
   `);
+
+  await ensureColumn(
+    "bookings",
+    "status",
+    "ENUM('pending', 'confirmed', 'cancelled', 'completed') NOT NULL DEFAULT 'pending'"
+  );
+  await ensureColumn("bookings", "pickup_location", "VARCHAR(255) NULL");
+  await ensureColumn("bookings", "adults", "INT NOT NULL DEFAULT 1");
+  await ensureColumn("bookings", "children", "INT NOT NULL DEFAULT 0");
+  await ensureColumn("bookings", "infants", "INT NOT NULL DEFAULT 0");
+
+  await ensureColumn("package_bookings", "pickup_location", "VARCHAR(255) NULL");
+  await ensureColumn("package_bookings", "adults", "INT NOT NULL DEFAULT 1");
+  await ensureColumn("package_bookings", "children", "INT NOT NULL DEFAULT 0");
+  await ensureColumn("package_bookings", "infants", "INT NOT NULL DEFAULT 0");
+  await ensureColumn("package_bookings", "total_amount", "DECIMAL(10, 2) NULL");
+}
+
+async function ensureColumn(table, column, definition) {
+  const [rows] = await pool.query(`SHOW COLUMNS FROM \`${table}\` LIKE ?`, [column]);
+  if (!rows.length) {
+    await pool.query(`ALTER TABLE \`${table}\` ADD COLUMN \`${column}\` ${definition}`);
+  }
 }
 
 function parseJson(value, fallback) {
@@ -170,12 +193,16 @@ export function mapBooking(row) {
   const booking = {
     _id: String(row.id),
     id: String(row.id),
-    bookingDate: row.booking_date,
-    guests: Number(row.guests),
-    totalPrice: Number(row.total_price),
-    contactPhone: row.contact_phone,
+    bookingDate: row.booking_date || row.travel_date,
+    guests: Number(row.guests ?? row.travelers ?? 1),
+    adults: Number(row.adults ?? row.guests ?? row.travelers ?? 1),
+    children: Number(row.children ?? 0),
+    infants: Number(row.infants ?? 0),
+    totalPrice: Number(row.total_price ?? row.total_amount ?? 0),
+    contactPhone: row.contact_phone || row.phone || "",
+    pickupLocation: row.pickup_location || "",
     specialRequests: row.special_requests || "",
-    status: row.status,
+    status: row.status || "pending",
     createdAt: row.created_at,
     updatedAt: row.updated_at
   };
@@ -192,12 +219,33 @@ export function mapBooking(row) {
     };
   }
 
+  if (!booking.tour && row.trip_title) {
+    booking.tour = {
+      _id: String(row.trip_id),
+      id: String(row.trip_id),
+      title: row.trip_title,
+      location: row.trip_location,
+      duration: row.trip_duration,
+      image: row.trip_image,
+      price: row.trip_price == null ? undefined : Number(row.trip_price)
+    };
+  }
+
   if (row.user_name) {
     booking.user = {
       _id: String(row.user_id),
       id: String(row.user_id),
       name: row.user_name,
       email: row.user_email
+    };
+  }
+
+  if (!booking.user && row.customer_name) {
+    booking.user = {
+      _id: row.email,
+      id: row.email,
+      name: row.customer_name,
+      email: row.email
     };
   }
 
@@ -215,18 +263,23 @@ export function mapPackageBooking(row) {
     packagePrice: row.package_price,
     bookingDate: row.booking_date,
     guests: Number(row.guests),
+    adults: Number(row.adults ?? row.guests ?? 1),
+    children: Number(row.children ?? 0),
+    infants: Number(row.infants ?? 0),
     contactName: row.contact_name,
     contactEmail: row.contact_email,
     contactPhone: row.contact_phone,
+    pickupLocation: row.pickup_location || "",
     specialRequests: row.special_requests || "",
+    totalPrice: row.total_amount == null ? undefined : Number(row.total_amount),
     status: row.status,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
-    user: row.user_name ? {
-      _id: String(row.user_id),
-      id: String(row.user_id),
-      name: row.user_name,
-      email: row.user_email
+    user: (row.user_name || row.contact_name) ? {
+      _id: row.user_id == null ? row.contact_email : String(row.user_id),
+      id: row.user_id == null ? row.contact_email : String(row.user_id),
+      name: row.user_name || row.contact_name,
+      email: row.user_email || row.contact_email
     } : undefined
   };
 }
