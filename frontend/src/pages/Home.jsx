@@ -13,11 +13,21 @@ export default function Home() {
     api.get("/tours?featured=true").then(res => setTours(res.data)).catch(console.error);
   }, []);
 
+  const featuredTours = tours.slice(0, 4);
+  const featuredTourKeys = featuredTours.map(tour => `${tour.slug || ""} ${tour.title || ""}`.toLowerCase());
+  const fallbackPackages = packages.filter(pkg =>
+    !featuredTourKeys.some(key => key.includes(pkg.id) || key.includes(pkg.title.toLowerCase()))
+  );
+  const popularExperiences = [
+    ...featuredTours.map(tour => ({ type: "tour", item: tour })),
+    ...fallbackPackages.slice(0, Math.max(0, 4 - featuredTours.length)).map(pkg => ({ type: "package", item: pkg }))
+  ].slice(0, 4);
+
   return (
     <>
       <section
         className="hero"
-        style={{ backgroundImage: `linear-gradient(90deg, rgba(0, 95, 115, .9), rgba(10, 147, 150, .32)), url("${heroImages.home}")` }}
+        style={{ backgroundImage: `linear-gradient(90deg, rgba(38, 102, 116, 0.9), rgba(10, 147, 150, .32)), url("${heroImages.home}")` }}
       >
         <div className="container-page py-28 md:py-36">
           <div className="max-w-3xl text-white">
@@ -35,7 +45,7 @@ export default function Home() {
       <section className="container-page py-16">
         <div className="grid md:grid-cols-4 gap-5">
           {[
-            ["6+", "Destinations", "Beaches, wildlife, culture and mountains."],
+            ["20+", "Destinations", "Beaches, wildlife, culture and mountains."],
             ["1-3", "Day packages", "Quick tours with clear daily plans."],
             ["4.9", "Guest rating", "Feedback from happy travelers."],
             ["24/7", "Support", "Local help before and during travel."]
@@ -106,7 +116,42 @@ export default function Home() {
           <Link to="/packages" className="text-emerald-700 font-bold">View packages</Link>
         </div>
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {tours.map(tour => <TourCard key={tour._id} tour={tour} />)}
+          {popularExperiences.map(({ type, item }) => (
+            type === "tour" ? (
+              <TourCard key={`tour-${item._id}`} tour={item} />
+            ) : (
+              <article key={`package-${item.id}`} className="card tour-card-effect">
+                <img src={item.image} alt={item.title} className="h-52 w-full object-cover" />
+                <div className="p-5">
+                  <div className="flex justify-between gap-3 items-center">
+                    <span className="badge">{item.days === "short" ? "Day Tour" : `${item.days} Day Tour`}</span>
+                    <span className="text-sm text-slate-500">{item.days === "short" ? "1 Day" : `${item.days} Day${item.days > 1 ? "s" : ""}`}</span>
+                  </div>
+                  <h3 className="mt-3 text-xl font-bold">{item.title}</h3>
+                  <p className="mt-2 text-slate-600 text-sm line-clamp-2">{item.route}</p>
+                  <div className="mt-5 flex items-center justify-between">
+                    <div>
+                      <span className="text-xs text-slate-500">From</span>
+                      <div className="font-black text-lg">{item.price}</div>
+                    </div>
+                    <Link to={`/booking/${item.id}`} className="btn-primary">View Tour</Link>
+                  </div>
+                  <FavoriteButton
+                    className="mt-4 w-full justify-center"
+                    tour={{
+                      id: item.id,
+                      title: item.title,
+                      image: item.image,
+                      price: item.price,
+                      route: item.route,
+                      label: item.days === "short" ? "Short tour" : `${item.days} day tour`,
+                      description: item.plan.join(" ")
+                    }}
+                  />
+                </div>
+              </article>
+            )
+          ))}
         </div>
       </section>
 

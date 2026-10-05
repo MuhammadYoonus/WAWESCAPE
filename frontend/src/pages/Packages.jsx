@@ -50,29 +50,30 @@ export default function Packages() {
         </div>
       </div>
 
-      <div className="mt-10 grid lg:grid-cols-2 gap-7">
+      <div className="mt-10 grid md:grid-cols-2 xl:grid-cols-3 gap-5">
         {visiblePackages.map(pkg => (
           <article key={pkg.id} className="card tour-card-effect">
-            <img src={pkg.image} alt={pkg.title} className="h-64 w-full object-cover" />
-            <div className="p-6">
+            <img src={pkg.image} alt={pkg.title} className="h-44 w-full object-cover" />
+            <div className="p-4">
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <span className="badge">{pkg.days === "short" ? "Short tour" : `${pkg.days} day tour`}</span>
-                <span className="text-lg font-black text-emerald-700">{pkg.price}</span>
+                <span className="text-base font-black text-emerald-700">{pkg.price}</span>
               </div>
-              <h2 className="mt-4 text-2xl font-black">{pkg.title}</h2>
+              <h2 className="mt-3 text-xl font-black">{pkg.title}</h2>
               <p className="mt-2 text-sm font-bold text-slate-500">{pkg.route}</p>
-              <div className="mt-6 space-y-3">
+              <div className="mt-4 space-y-2">
                 {pkg.plan.map((step, index) => (
-                  <div key={step} className="flex gap-3 rounded-xl bg-slate-50 p-4">
-                    <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-emerald-700 text-sm font-black text-white">
+                  <div key={step} className="flex gap-2 rounded-lg bg-slate-50 p-3">
+                    <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-emerald-700 text-xs font-black text-white">
                       {index + 1}
                     </span>
                     <p className="text-sm font-semibold text-slate-700">{step}</p>
                   </div>
                 ))}
               </div>
-              <div className="mt-6 flex flex-wrap gap-3">
+              <div className="package-actions">
                 <FavoriteButton
+                  className="w-full"
                   tour={{
                     id: pkg.id,
                     title: pkg.title,
@@ -83,8 +84,8 @@ export default function Packages() {
                     description: pkg.plan.join(" ")
                   }}
                 />
-                <Link to={`/booking/${pkg.id}`} className="btn-primary">Book This Plan</Link>
-                <Link to="/destinations" className="btn-outline">View Destinations</Link>
+                <Link to={`/booking/${pkg.id}`} className="btn-primary">Book Plan</Link>
+                <Link to="/destinations" className="btn-outline">Destinations</Link>
               </div>
             </div>
           </article>

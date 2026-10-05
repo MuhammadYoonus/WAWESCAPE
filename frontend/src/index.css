@@ -35,6 +35,11 @@ body { @apply font-sans; background: var(--white-cloud); color: var(--ink); }
 .filter-active { @apply rounded-xl text-white px-4 py-2 text-sm font-semibold; background: var(--teal-ocean); }
 .favorite-button { @apply inline-flex items-center gap-2 rounded-xl border px-4 py-3 text-sm font-black transition; border-color: rgba(238, 155, 0, .35); background: rgba(238, 155, 0, .12); color: #9a6500; }
 .favorite-button:hover, .favorite-button-active { background: var(--summer-sun); border-color: var(--summer-sun); color: var(--sky-blue); }
+.package-actions { @apply mt-5 grid grid-cols-3 gap-2; }
+.package-actions .favorite-button,
+.package-actions .btn-primary,
+.package-actions .btn-outline { @apply min-h-11 justify-center rounded-lg px-2 py-2 text-center text-xs font-black; }
+.package-actions .favorite-button { @apply gap-1; }
 .eyebrow { @apply text-xs font-black tracking-[0.2em]; color: var(--teal-ocean); }
 .section-title { @apply text-4xl md:text-5xl font-black tracking-tight; }
 label { @apply block text-sm font-semibold; color: var(--sky-blue); }
