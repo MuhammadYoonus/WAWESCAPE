@@ -1,10 +1,12 @@
 import { Link, NavLink, useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import { brandImages } from "../assets/images/imageCatalog";
 
 export default function Navbar() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const [scrolled, setScrolled] = useState(false);
   const publicLinks = [
     ["/", "Home"],
     ["/destinations", "Destinations"],
@@ -16,8 +18,19 @@ export default function Navbar() {
     ["/feedback", "Feedback"]
   ];
 
+  useEffect(() => {
+    const updateHeader = () => setScrolled(window.scrollY > 20);
+    updateHeader();
+    window.addEventListener("scroll", updateHeader);
+    return () => window.removeEventListener("scroll", updateHeader);
+  }, []);
+
   return (
-    <header className="sticky top-0 z-50 border-b border-white/10 bg-slate-950/95 text-white shadow-lg backdrop-blur">
+    <header className={`fixed inset-x-0 top-0 z-50 text-white transition-all duration-300 ${
+      scrolled
+        ? "border-b border-white/10 bg-slate-950/95 shadow-lg backdrop-blur"
+        : "border-b border-transparent bg-transparent shadow-none"
+    }`}>
       <nav className="container-page flex min-h-20 flex-col gap-4 py-4 lg:flex-row lg:items-center lg:justify-between">
         <Link to="/" className="flex items-center gap-3">
           <img src={brandImages.headerLogo} alt="WAWESCAPE" className="h-16 w-auto object-contain md:h-20" />

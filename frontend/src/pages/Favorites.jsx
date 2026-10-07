@@ -12,7 +12,7 @@ export default function Favorites() {
         eyebrow="FAVORITES"
         title="Saved tours for your next Sri Lanka trip"
         text="Customers can keep interesting tours here while comparing package options."
-        image={heroImages.gallery}
+        image={heroImages.favorites}
       />
       <section className="container-page py-14">
         {favorites.length === 0 ? (

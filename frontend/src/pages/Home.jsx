@@ -26,13 +26,13 @@ export default function Home() {
   return (
     <>
       <section
-        className="hero"
-        style={{ backgroundImage: `linear-gradient(90deg, rgba(38, 102, 116, 0.9), rgba(10, 147, 150, .32)), url("${heroImages.home}")` }}
+        className="hero !items-start"
+        style={{ backgroundImage: `linear-gradient(90deg, rgba(0, 95, 115, 0.72), rgba(10, 147, 150, .28), rgba(238, 155, 0, .12)), url("${heroImages.home}")` }}
       >
-        <div className="container-page py-28 md:py-36">
+        <div className="container-page pb-24 pt-32 md:pb-32 md:pt-40 !pl-4 md:!pl-6">
           <div className="max-w-3xl text-white">
             <span className="inline-block rounded-full bg-white/15 px-4 py-2 text-sm font-semibold">LOCAL SRI LANKAN TRAVEL AGENCY</span>
-            <h1 className="mt-6 text-5xl md:text-7xl font-black leading-tight">See Sri Lanka.<br /><span className="text-emerald-300">Feel Sri Lanka.</span></h1>
+            <h1 className="mt-6 text-5xl md:text-7xl font-black leading-tight">See Sri Lanka.<br /><span className="text-[#EE9B00] drop-shadow-lg">Feel Sri Lanka.</span></h1>
             <p className="mt-6 text-lg md:text-xl text-slate-200 max-w-2xl">From whale watching in Mirissa to mountain journeys in Ella, discover authentic island experiences with WAWECAPE.</p>
             <div className="mt-8 flex flex-wrap gap-4">
               <Link to="/packages" className="btn-primary text-base">Explore Packages</Link>

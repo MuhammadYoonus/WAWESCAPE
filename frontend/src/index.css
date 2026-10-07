@@ -47,13 +47,17 @@ input, textarea, select { @apply mt-2 w-full rounded-xl border px-4 py-3 outline
 input:focus, textarea:focus, select:focus { border-color: var(--teal-ocean); --tw-ring-color: rgba(10, 147, 150, .18); }
 
 .hero {
+  @apply flex items-center;
   background-position: center;
   background-size: cover;
+  min-height: 640px;
 }
 
 .page-hero {
+  @apply flex items-center;
   background-position: center;
   background-size: cover;
+  min-height: 640px;
 }
 
 .bg-slate-950, .bg-emerald-900 { background-color: var(--sky-blue) !important; }

@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
 import { Navigate } from "react-router-dom";
 import api from "../api";
+import PageHero from "../components/PageHero";
 import { useAuth } from "../context/AuthContext";
+import { heroImages } from "../assets/images/imageCatalog";
 
 export default function Admin() {
   const { user } = useAuth();
@@ -61,9 +63,15 @@ export default function Admin() {
     return `${booking.adults || 0} adults · ${booking.children || 0} children 4-12 · ${booking.infants || 0} below 3`;
   }
 
-  return <section className="container-page py-14">
-    <p className="eyebrow">MANAGEMENT</p><h1 className="section-title">Admin dashboard</h1>
-    <div className="grid md:grid-cols-4 gap-5 mt-8">
+  return <>
+  <PageHero
+    eyebrow="MANAGEMENT"
+    title="Admin dashboard"
+    text="Track bookings, customer inquiries, and traveler feedback for WAWESCAPE."
+    image={heroImages.destinations}
+  />
+  <section className="container-page py-14">
+    <div className="grid md:grid-cols-4 gap-5">
       <div className="card p-6"><p className="text-slate-500">Total bookings</p><p className="text-4xl font-black mt-2">{allBookings.length}</p></div>
       <div className="card p-6"><p className="text-slate-500">Pending</p><p className="text-4xl font-black mt-2">{allBookings.filter(b=>b.status==="pending").length}</p></div>
       <div className="card p-6"><p className="text-slate-500">New inquiries</p><p className="text-4xl font-black mt-2">{inquiries.filter(i=>i.status==="new").length}</p></div>
@@ -111,5 +119,6 @@ export default function Admin() {
         </tr>)}</tbody>
       </table>
     </div>
-  </section>;
+  </section>
+  </>;
 }

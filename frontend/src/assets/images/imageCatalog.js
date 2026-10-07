@@ -23,6 +23,9 @@ import pidurangala from "./Pidurangalarock.png";
 import arugambay from "./Arugambay.jpg";
 import liptonseat from "./Liptonseat.jpg";
 import dambullacurv from "./DambullaCurv.jpg";
+import dondraLighthouse from "./Dondra Lighthouse.jpg";
+import weligamaBeachSky from "./Weligamabeachsky.jpeg";
+import weligamaBeachWide from "./Weligam beach.png";
 import weligamasurf from "./Weligamasurf.jpeg";
 
 export const brandImages = {
@@ -36,10 +39,12 @@ export const heroImages = {
   destinations: nineArchHero,
   packages: yalaHero,
   tours: nineArchHero,
-  gallery: beachHero,
+  favorites: turtleBeach,
+  gallery: weligamaBeachSunset,
   about: nineArchHero,
-  contact: beachHero,
-  feedback: yalaHero
+  bookings: koggalaBoatSafari,
+  contact: dondraLighthouse,
+  feedback: DaladhaMaligawa
 };
 
 export const destinationImages = {
@@ -54,6 +59,9 @@ export const destinationImages = {
   arugambay: arugambay,
   liptonseat,
   dambullacurv,
+  dondraLighthouse,
+  weligamaBeachSky,
+  weligamaBeachWide,
   weligamasurf
 };
 
@@ -63,7 +71,9 @@ export const packageImages = {
   ellaTwo: ella,
   wildTwo: Yala,
   classicThree: nineArchHero,
-  beachThree: beachHero
+  beachThree: beachHero,
+  southCoastThree: weligamaBeachSky,
+  lighthouseDay: dondraLighthouse
 };
 
 export const shortTourImages = {
@@ -77,6 +87,9 @@ export const shortTourImages = {
   nineArchBridge: nineArchHero,
   jungleBeach,
   weligamaBeach,
+  weligamaBeachSky,
+  weligamaBeachWide,
+  dondraLighthouse,
   udawalawaSafari,
   turtleBeach
 };

@@ -144,6 +144,15 @@ export const packages = [
     plan: ["Transfer to Turtle Beach", "Relax by the reef and beach area", "Optional sunset photo stop"]
   },
   {
+    id: "dondra-lighthouse",
+    days: "short",
+    title: "Dondra Lighthouse Visit",
+    route: "Matara - Dondra Head - Coastal Photo Stops",
+    price: "LKR 9,000",
+    image: shortTourImages.dondraLighthouse,
+    plan: ["Drive to Dondra Head Lighthouse", "Coastal viewpoint and photo time", "Matara beach stop before return"]
+  },
+  {
     id: "koggala-boat-safari",
     days: "short",
     title: "Koggala Boat Safari",
@@ -160,15 +169,6 @@ export const packages = [
     price: "LKR 8,500",
     image: shortTourImages.jungleBeach,
     plan: ["Pickup from Galle or Unawatuna", "Relax at Jungle Beach", "Optional coastal viewpoint stop"]
-  },
-  {
-    id: "weligama-beach",
-    days: "short",
-    title: "Weligama Beach",
-    route: "Weligama Bay - Surf Beach - Local Seafood Stop",
-    price: "LKR 8,000",
-    image: shortTourImages.weligamaBeach,
-    plan: ["Beach transfer to Weligama Bay", "Surf watching or beginner surf time", "Seafood cafe stop before return"]
   },
   {
     id: "udawalawa-safari",
@@ -198,6 +198,15 @@ export const packages = [
     plan: ["Scenic drive to Ella", "Nine Arch Bridge walk and photo stop", "Little Adam's Peak viewpoint"]
   },
   {
+    id: "matara-dondra-day",
+    days: 1,
+    title: "Matara and Dondra Day Tour",
+    route: "Matara Beach - Dondra Lighthouse - Weligama",
+    price: "LKR 16,500",
+    image: packageImages.lighthouseDay,
+    plan: ["Morning Matara beach and temple stop", "Dondra Lighthouse visit and coastal photos", "Weligama sunset stop and return"]
+  },
+  {
     id: "ella-two",
     days: 2,
     title: "Ella Mountain Weekend",
@@ -216,6 +225,24 @@ export const packages = [
     plan: ["Day 1: Lagoon stop, hotel check-in and temple visit", "Day 2: Early morning jeep safari and coastal lunch"]
   },
   {
+    id: "kandy-two",
+    days: 2,
+    title: "Kandy Culture Escape",
+    route: "Kandy - Temple of the Tooth - Peradeniya",
+    price: "LKR 38,500",
+    image: destinationImages.kandy,
+    plan: ["Day 1: Kandy lake walk, Temple of the Tooth and cultural show", "Day 2: Peradeniya Botanical Garden, viewpoint stop and return"]
+  },
+  {
+    id: "dambulla-two",
+    days: 2,
+    title: "Dambulla Cave and Heritage Tour",
+    route: "Dambulla - Sigiriya - Village Experience",
+    price: "LKR 42,500",
+    image: destinationImages.dambullacurv,
+    plan: ["Day 1: Dambulla Cave Temple visit and local market stop", "Day 2: Sigiriya viewpoint, village lunch experience and return"]
+  },
+  {
     id: "classic-three",
     days: 3,
     title: "Classic Sri Lanka Mini Round Tour",
@@ -232,6 +259,24 @@ export const packages = [
     price: "LKR 59,000",
     image: packageImages.beachThree,
     plan: ["Day 1: Bentota river safari and beach stay", "Day 2: Galle Fort walk and Unawatuna swim", "Day 3: Mirissa whale watching and sunset"]
+  },
+  {
+    id: "south-coast-three",
+    days: 3,
+    title: "South Coast Beach Explorer",
+    route: "Galle - Weligama - Matara - Dondra",
+    price: "LKR 56,500",
+    image: packageImages.southCoastThree,
+    plan: ["Day 1: Galle Fort, Jungle Beach and Unawatuna stay", "Day 2: Weligama surf bay, Turtle Beach and Mirissa sunset", "Day 3: Matara coast, Dondra Lighthouse and return"]
+  },
+  {
+    id: "arugambay-three",
+    days: 3,
+    title: "Arugambay Surf and Coast Escape",
+    route: "Arugambay - Panama - Pottuvil Lagoon",
+    price: "LKR 62,500",
+    image: destinationImages.arugambay,
+    plan: ["Day 1: Scenic east coast drive and Arugambay beach sunset", "Day 2: Surf time, beach cafes and Panama coastal village visit", "Day 3: Pottuvil Lagoon safari and return journey"]
   }
 ];
 
