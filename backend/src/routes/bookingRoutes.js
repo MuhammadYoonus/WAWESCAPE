@@ -1,6 +1,7 @@
 import express from "express";
 import { protect, adminOnly } from "../middleware/auth.js";
 import { mapBooking, mapTour, pool } from "../db.js";
+import { sendBookingConfirmation } from "../services/notificationService.js";
 
 const router = express.Router();
 
@@ -45,6 +46,9 @@ router.post("/", protect, async (req, res) => {
     const [rows] = await pool.query(bookingJoinQuery("WHERE b.id = ?"), [result.insertId]);
     const booking = mapBooking(rows[0]);
     booking.specialRequests = specialRequests || "";
+    sendBookingConfirmation(booking, { kind: "tour" }).catch(error => {
+      console.error("Booking notification failed:", error.message);
+    });
     res.status(201).json(booking);
   } catch (error) {
     res.status(400).json({ message: error.message });

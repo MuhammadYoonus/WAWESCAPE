@@ -11,6 +11,7 @@ A full-stack web application for a local Sri Lankan travel agency. The project u
 - User registration/login with JWT
 - Customer booking history
 - Admin dashboard for booking details and inquiry details
+- Email/SMS booking confirmations for customers and admin
 - Contact inquiry form saved to database
 - Favorites saved in browser local storage
 - MySQL database
@@ -72,7 +73,21 @@ DB_USER=root
 DB_PASSWORD=your_mysql_password
 DB_NAME=wavescape_db
 DB_PORT=3306
+BRAND_NAME=WAWESCAPE
+ADMIN_NOTIFICATION_EMAIL=admin@wavecape.lk
+ADMIN_NOTIFICATION_PHONE=+94762840207
+SMTP_HOST=smtp.example.com
+SMTP_PORT=587
+SMTP_SECURE=false
+SMTP_USER=your_smtp_username
+SMTP_PASS=your_smtp_password
+SMTP_FROM=WAWESCAPE <bookings@wavecape.lk>
+TWILIO_ACCOUNT_SID=your_twilio_account_sid
+TWILIO_AUTH_TOKEN=your_twilio_auth_token
+TWILIO_FROM_PHONE=+10000000000
 ```
+
+Email confirmations use SMTP settings. SMS confirmations use Twilio settings. If either set of credentials is missing, that channel is skipped so local development still works.
 
 Frontend `.env`:
 ```env
@@ -82,7 +97,6 @@ VITE_API_URL=http://localhost:5001/api
 ## Suggested future extensions
 - Online payment gateway
 - Google Maps
-- Email/SMS booking confirmation
 - Cloud image storage
 - Tour availability calendar
 - Reviews and ratings
