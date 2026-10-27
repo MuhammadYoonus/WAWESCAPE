@@ -57,14 +57,13 @@ const tours = [
 
 async function seed() {
   await initDb();
-  await pool.query("DELETE FROM bookings");
-  await pool.query("DELETE FROM tours");
 
   for (const tour of tours) {
     await pool.query(
       `INSERT INTO tours
       (title, slug, category, location, duration, price, max_guests, image, short_description, description, itinerary, includes, excludes, featured, active)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, true)`,
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, true)
+      ON DUPLICATE KEY UPDATE slug = VALUES(slug)`,
       [
         tour.title,
         tour.slug,

@@ -26,10 +26,11 @@ router.post("/", protect, async (req, res) => {
     const chargeableGuests = adultCount + childCount * 0.75;
     const [result] = await pool.query(
       `INSERT INTO bookings
-      (trip_id, customer_name, email, phone, travelers, travel_date, total_amount, status, pickup_location, adults, children, infants)
-      VALUES (?, ?, ?, ?, ?, ?, ?, 'pending', ?, ?, ?, ?)`,
+      (tour_id, user_id, customer_name, email, contact_phone, guests, booking_date, total_price, status, pickup_location, adults, children, infants, special_requests)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'pending', ?, ?, ?, ?, ?)`,
       [
         tour._id,
+        req.user.id,
         req.user.name,
         req.user.email,
         contactPhone,
@@ -39,13 +40,13 @@ router.post("/", protect, async (req, res) => {
         pickupLocation,
         adultCount,
         childCount,
-        infantCount
+        infantCount,
+        specialRequests || ""
       ]
     );
 
     const [rows] = await pool.query(bookingJoinQuery("WHERE b.id = ?"), [result.insertId]);
     const booking = mapBooking(rows[0]);
-    booking.specialRequests = specialRequests || "";
     sendBookingConfirmation(booking, { kind: "tour" }).catch(error => {
       console.error("Booking notification failed:", error.message);
     });
@@ -56,7 +57,7 @@ router.post("/", protect, async (req, res) => {
 });
 
 router.get("/mine", protect, async (req, res) => {
-  const [rows] = await pool.query(bookingJoinQuery("WHERE b.email = ? ORDER BY b.created_at DESC"), [req.user.email]);
+  const [rows] = await pool.query(bookingJoinQuery("WHERE (b.user_id = ? OR (b.user_id IS NULL AND b.email = ?)) ORDER BY b.created_at DESC"), [req.user.id, req.user.email]);
   res.json(rows.map(mapBooking));
 });
 
@@ -77,14 +78,17 @@ function bookingJoinQuery(suffix = "") {
   return `
     SELECT
       b.*,
-      tr.id AS trip_id,
-      COALESCE(tr.title, CONCAT('Trip #', b.trip_id)) AS trip_title,
-      tr.location AS trip_location,
-      tr.duration AS trip_duration,
-      tr.image_url AS trip_image,
-      tr.price AS trip_price
+      t.id AS tour_id,
+      COALESCE(t.title, 'Unavailable tour') AS tour_title,
+      t.location AS tour_location,
+      t.duration AS tour_duration,
+      t.image AS tour_image,
+      t.price AS tour_price,
+      COALESCE(u.name, b.customer_name) AS user_name,
+      COALESCE(u.email, b.email) AS user_email
     FROM bookings b
-    LEFT JOIN trips tr ON b.trip_id = tr.id
+    LEFT JOIN tours t ON b.tour_id = t.id
+    LEFT JOIN users u ON b.user_id = u.id
     ${suffix}
   `;
 }

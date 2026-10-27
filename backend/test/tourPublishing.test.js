@@ -13,6 +13,7 @@ process.env.SMTP_HOST = "";
 process.env.SMTP_USER = "";
 process.env.TWILIO_ACCOUNT_SID = "";
 const { default: packageBookingRoutes } = await import("../src/routes/packageBookingRoutes.js");
+const { default: bookingRoutes } = await import("../src/routes/bookingRoutes.js");
 const originalQuery = pool.query;
 let queryHandler;
 let server;
@@ -35,6 +36,7 @@ before(async () => {
   app.use(express.json());
   app.use("/api/tours", tourRoutes);
   app.use("/api/package-bookings", packageBookingRoutes);
+  app.use("/api/bookings", bookingRoutes);
   server = app.listen(0, "127.0.0.1");
   await once(server, "listening");
   baseUrl = `http://127.0.0.1:${server.address().port}/api`;
@@ -154,4 +156,36 @@ test("over-capacity, negative and fractional guest counts cannot create publishe
 test("a removed published tour cannot be booked", async () => {
   const response = await post("/package-bookings", bookingInput, customerToken);
   assert.equal(response.status, 404);
+});
+
+test("tour bookings reference tours, persist special requests and reload the correct details", async () => {
+  await createTour();
+  const readTour = queryHandler;
+  let inserted;
+  queryHandler = async (sql, values) => {
+    assert.doesNotMatch(sql, /JOIN trips/);
+    if (sql.includes("INSERT INTO bookings")) {
+      assert.match(sql, /tour_id, user_id/);
+      assert.match(sql, /special_requests/);
+      inserted = values;
+      return [{ insertId: 100 }];
+    }
+    if (sql.includes("FROM bookings")) return [[{
+      id: 100, tour_id: 42, tour_title: "Ella Mountain Escape", user_id: 18,
+      guests: 2, total_price: inserted[7], special_requests: inserted[12], status: "pending"
+    }]];
+    return readTour(sql, values);
+  };
+  const response = await post("/bookings", {
+    tourId: 42, bookingDate: "2027-01-01", adults: 2, children: 0, infants: 0,
+    contactPhone: "+94770000000", pickupLocation: "Test hotel", specialRequests: "Vegetarian lunch"
+  }, customerToken);
+  assert.equal(response.status, 201);
+  assert.equal(inserted[0], "42");
+  assert.equal(inserted[1], "18");
+  assert.equal((await response.json()).specialRequests, "Vegetarian lunch");
+  const reloaded = await fetch(`${baseUrl}/bookings/mine`, { headers: { Authorization: `Bearer ${customerToken}` } });
+  const items = await reloaded.json();
+  assert.equal(items[0].tour.title, "Ella Mountain Escape");
+  assert.equal(items[0].specialRequests, "Vegetarian lunch");
 });

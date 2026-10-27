@@ -72,6 +72,12 @@ Change this password before real deployment.
 
 Existing starter packages remain available; database tours take precedence when their slug matches a starter package ID. Featured tours also appear on the home page. For newly published tours, the booking API reads the price and guest limit from the database.
 
+## Database compatibility
+
+Startup creates the required tables and upgrades older `trips`-based booking tables without deleting their records. Referenced legacy trips are copied into separate archived tour records; their numeric IDs are never assumed to identify a current tour. New tour bookings reference `tours` and retain special requests. Re-running the seed command adds missing sample tours without clearing bookings or overwriting existing tours.
+
+Run `npm test` in each application folder. To verify fresh setup and legacy migration against an isolated temporary MySQL database, run `$env:RUN_MYSQL_INTEGRATION='1'; npm test` in the backend folder (PowerShell). This requires database creation privileges and never uses the project database as its test fixture.
+
 ## Environment
 Backend `.env`:
 ```env

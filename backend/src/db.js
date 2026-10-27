@@ -1,5 +1,6 @@
 import dotenv from "dotenv";
 import mysql from "mysql2/promise";
+import { migrateBookingSchema } from "./migrations/bookingSchema.js";
 
 dotenv.config();
 
@@ -52,18 +53,20 @@ export async function initDb() {
   await pool.query(`
     CREATE TABLE IF NOT EXISTS bookings (
       id INT AUTO_INCREMENT PRIMARY KEY,
-      user_id INT NOT NULL,
+      user_id INT NULL,
       tour_id INT NOT NULL,
       booking_date DATE NOT NULL,
       guests INT NOT NULL,
       total_price DECIMAL(10, 2) NOT NULL,
       contact_phone VARCHAR(40) NOT NULL,
       special_requests TEXT,
+      customer_name VARCHAR(255) NULL,
+      email VARCHAR(255) NULL,
       status ENUM('pending', 'confirmed', 'cancelled', 'completed') NOT NULL DEFAULT 'pending',
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
       updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-      FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-      FOREIGN KEY (tour_id) REFERENCES tours(id) ON DELETE CASCADE
+      FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL,
+      FOREIGN KEY (tour_id) REFERENCES tours(id) ON DELETE RESTRICT
     )
   `);
 
@@ -124,6 +127,7 @@ export async function initDb() {
   await ensureColumn("bookings", "adults", "INT NOT NULL DEFAULT 1");
   await ensureColumn("bookings", "children", "INT NOT NULL DEFAULT 0");
   await ensureColumn("bookings", "infants", "INT NOT NULL DEFAULT 0");
+  await migrateBookingSchema(pool);
 
   await ensureColumn("package_bookings", "pickup_location", "VARCHAR(255) NULL");
   await ensureColumn("package_bookings", "adults", "INT NOT NULL DEFAULT 1");
