@@ -4,6 +4,7 @@ import api from "../api";
 import PageHero from "../components/PageHero";
 import { useAuth } from "../context/AuthContext";
 import { heroImages } from "../assets/images/imageCatalog";
+import AdminTourForm from "../components/AdminTourForm";
 
 export default function Admin() {
   const { user } = useAuth();
@@ -77,6 +78,7 @@ export default function Admin() {
       <div className="card p-6"><p className="text-slate-500">New inquiries</p><p className="text-4xl font-black mt-2">{inquiries.filter(i=>i.status==="new").length}</p></div>
       <div className="card p-6"><p className="text-slate-500">Feedback</p><p className="text-4xl font-black mt-2">{feedbackItems.length}</p></div>
     </div>
+    <AdminTourForm />
     <h2 className="mt-10 text-2xl font-black">Booking details</h2>
     <div className="card overflow-x-auto mt-8">
       <table className="w-full text-sm">

@@ -11,6 +11,7 @@ A full-stack web application for a local Sri Lankan travel agency. The project u
 - User registration/login with JWT
 - Customer booking history
 - Admin dashboard for booking details and inquiry details
+- Admin Add Tour Package form publishes database-backed tours to the Tour Packages page
 - Email/SMS booking confirmations for customers and admin
 - Contact inquiry form saved to database
 - Favorites saved in browser local storage
@@ -61,6 +62,15 @@ Seeded admin:
 - Password: Admin123!
 
 Change this password before real deployment.
+
+## Add a tour package
+
+1. Log in as an admin and open the Admin dashboard.
+2. In **Add a tour package**, enter the name, route, duration, price per adult, guest limit, image URL, descriptions and tour plan (one activity per line).
+3. Click **Add Tour Package**. The tour is saved in MySQL and appears in its Short Tours, 1 Day, 2 Days or 3 Days section immediately on the next visit to Tour Packages.
+4. Use **View the published tour package** in the success message to open the correct section. Customers can use **Book Plan** to book the saved tour.
+
+Existing starter packages remain available; database tours take precedence when their slug matches a starter package ID. Featured tours also appear on the home page. For newly published tours, the booking API reads the price and guest limit from the database.
 
 ## Environment
 Backend `.env`:

@@ -1,6 +1,6 @@
 import express from "express";
 import { protect, adminOnly } from "../middleware/auth.js";
-import { mapPackageBooking, pool } from "../db.js";
+import { mapPackageBooking, mapTour, pool } from "../db.js";
 import { sendBookingConfirmation } from "../services/notificationService.js";
 
 const router = express.Router();
@@ -26,10 +26,30 @@ router.post("/", protect, async (req, res) => {
     const childCount = Number(children || 0);
     const infantCount = Number(infants || 0);
     const guestCount = adultCount + childCount + infantCount;
-    const basePrice = priceFromText(packagePrice);
+    let title = packageTitle;
+    let route = packageRoute;
+    let price = packagePrice;
+    let basePrice = priceFromText(price);
     const chargeableGuests = adultCount + childCount * 0.75;
 
-    if (!packageId || !packageTitle || !bookingDate || !contactName || !contactEmail || !contactPhone || !pickupLocation) {
+    // Published tours use their saved details; prices sent by the browser are not trusted.
+    if (typeof packageId === "string" && packageId.startsWith("tour-")) {
+      const [tourRows] = await pool.query("SELECT * FROM tours WHERE id = ? AND active = true", [packageId.slice(5)]);
+      const tour = mapTour(tourRows[0]);
+      if (!tour) return res.status(404).json({ message: "Tour package is no longer available" });
+      if (![adultCount, childCount, infantCount].every(Number.isInteger) || childCount < 0 || infantCount < 0) {
+        return res.status(400).json({ message: "Guest counts must be nonnegative whole numbers" });
+      }
+      if (guestCount > tour.maxGuests) {
+        return res.status(400).json({ message: `This tour allows a maximum of ${tour.maxGuests} guests` });
+      }
+      title = tour.title;
+      route = tour.location;
+      basePrice = tour.price;
+      price = `LKR ${tour.price.toFixed(2)}`;
+    }
+
+    if (!packageId || !title || !bookingDate || !contactName || !contactEmail || !contactPhone || !pickupLocation) {
       return res.status(400).json({ message: "Please complete all required booking details" });
     }
 
@@ -44,9 +64,9 @@ router.post("/", protect, async (req, res) => {
       [
         req.user.id,
         packageId,
-        packageTitle,
-        packageRoute || "",
-        packagePrice || "",
+        title,
+        route || "",
+        price || "",
         bookingDate,
         guestCount,
         contactName,

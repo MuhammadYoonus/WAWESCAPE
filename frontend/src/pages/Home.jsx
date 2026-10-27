@@ -1,19 +1,13 @@
-import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import api from "../api";
 import FavoriteButton from "../components/FavoriteButton";
 import TourCard from "../components/TourCard";
 import { heroImages } from "../assets/images/imageCatalog";
-import { destinations, feedbacks, packages } from "../data/travelContent";
+import { destinations, feedbacks } from "../data/travelContent";
+import { useTourPackages } from "../hooks/useTourPackages";
 
 export default function Home() {
-  const [tours, setTours] = useState([]);
-
-  useEffect(() => {
-    api.get("/tours?featured=true").then(res => setTours(res.data)).catch(console.error);
-  }, []);
-
-  const featuredTours = tours.slice(0, 4);
+  const { tours, packages } = useTourPackages();
+  const featuredTours = tours.filter(tour => tour.featured).slice(0, 4);
   const featuredTourKeys = featuredTours.map(tour => `${tour.slug || ""} ${tour.title || ""}`.toLowerCase());
   const fallbackPackages = packages.filter(pkg =>
     !featuredTourKeys.some(key => key.includes(pkg.id) || key.includes(pkg.title.toLowerCase()))

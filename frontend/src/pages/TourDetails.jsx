@@ -29,7 +29,12 @@ export default function TourDetails() {
     e.preventDefault();
     if (!user) return navigate("/login");
     try {
-      await api.post("/bookings", { ...form, tourId: tour._id });
+      await api.post("/package-bookings", {
+        ...form,
+        packageId: `tour-${tour._id}`,
+        contactName: user.name,
+        contactEmail: user.email
+      });
       setMessage("Booking request submitted successfully!");
       setForm({ bookingDate: "", adults: 1, children: 0, infants: 0, pickupLocation: "", contactPhone: "", specialRequests: "" });
     } catch (error) {
