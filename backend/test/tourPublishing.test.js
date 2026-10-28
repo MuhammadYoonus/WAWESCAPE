@@ -5,6 +5,7 @@ import express from "express";
 import jwt from "jsonwebtoken";
 import { pool } from "../src/db.js";
 import tourRoutes from "../src/routes/tourRoutes.js";
+import { errorHandler } from "../src/middleware/errors.js";
 
 // These tests exercise HTTP routes against an isolated in-memory query stub.
 // No project database records are read or changed, and no notifications are sent.
@@ -39,6 +40,7 @@ before(async () => {
   app.use("/api/tours", tourRoutes);
   app.use("/api/package-bookings", packageBookingRoutes);
   app.use("/api/bookings", bookingRoutes);
+  app.use(errorHandler);
   server = app.listen(0, "127.0.0.1");
   await once(server, "listening");
   baseUrl = `http://127.0.0.1:${server.address().port}/api`;
@@ -230,4 +232,13 @@ test("deletion protects booked tours and removes only an unbooked record", async
 test("the management list requires admin access", async () => {
   const response = await fetch(`${baseUrl}/tours?admin=true`, { headers: { Authorization: `Bearer ${customerToken}` } });
   assert.equal(response.status, 403);
+});
+
+test("failed asynchronous database reads return JSON errors without crashing the API", async () => {
+  queryHandler = async () => { throw Object.assign(new Error("private SQL and credentials"), { code: "TEST_DB_FAILURE" }); };
+  const response = await fetch(`${baseUrl}/bookings/mine`, { headers: { Authorization: `Bearer ${customerToken}` } });
+  assert.equal(response.status, 500);
+  assert.doesNotMatch((await response.json()).message, /private|credentials|SQL/);
+  const invalidStatus = await fetch(`${baseUrl}/bookings/42/status`, { method: "PUT", headers: { "Content-Type": "application/json", Authorization: `Bearer ${adminToken}` }, body: JSON.stringify({ status: "invalid" }) });
+  assert.equal(invalidStatus.status, 400);
 });

@@ -1,27 +1,21 @@
+import { handleRouteErrors } from "../middleware/errors.js";
 import express from "express";
 import { protect, adminOnly } from "../middleware/auth.js";
 import { mapBooking, mapTour, pool } from "../db.js";
 import { sendBookingConfirmation } from "../services/notificationService.js";
+import { bookingInput, choice, resourceId, ValidationError } from "../utils/validation.js";
 
 const router = express.Router();
 
 router.post("/", protect, async (req, res) => {
   try {
-    const { tourId, bookingDate, adults, children, infants, pickupLocation, contactPhone, specialRequests } = req.body;
-    const adultCount = Number(adults || 0);
-    const childCount = Number(children || 0);
-    const infantCount = Number(infants || 0);
-    const guestCount = adultCount + childCount + infantCount;
+    const tourId = resourceId(req.body?.tourId);
 
     const [tourRows] = await pool.query("SELECT * FROM tours WHERE id = ?", [tourId]);
     const tour = mapTour(tourRows[0]);
     if (!tour || !tour.active) return res.status(404).json({ message: "Tour not available" });
-    if (adultCount < 1) {
-      return res.status(400).json({ message: "At least one adult is required for a booking" });
-    }
-    if (guestCount < 1 || guestCount > tour.maxGuests) {
-      return res.status(400).json({ message: `Guests must be between 1 and ${tour.maxGuests}` });
-    }
+    const { adults: adultCount, children: childCount, infants: infantCount, guests: guestCount,
+      bookingDate, pickupLocation, contactPhone, specialRequests } = bookingInput(req.body, tour.maxGuests);
 
     const chargeableGuests = adultCount + childCount * 0.75;
     const [result] = await pool.query(
@@ -52,7 +46,8 @@ router.post("/", protect, async (req, res) => {
     });
     res.status(201).json(booking);
   } catch (error) {
-    res.status(400).json({ message: error.message });
+    if (error instanceof ValidationError) return res.status(400).json({ message: error.message });
+    throw error;
   }
 });
 
@@ -67,7 +62,8 @@ router.get("/", protect, adminOnly, async (req, res) => {
 });
 
 router.put("/:id/status", protect, adminOnly, async (req, res) => {
-  await pool.query("UPDATE bookings SET status = ? WHERE id = ?", [req.body.status, req.params.id]);
+  const status = choice(req.body?.status, ["pending", "confirmed", "cancelled", "completed"], "Booking status");
+  await pool.query("UPDATE bookings SET status = ? WHERE id = ?", [status, req.params.id]);
   const [rows] = await pool.query(bookingJoinQuery("WHERE b.id = ?"), [req.params.id]);
   const booking = mapBooking(rows[0]);
   if (!booking) return res.status(404).json({ message: "Booking not found" });
@@ -93,4 +89,4 @@ function bookingJoinQuery(suffix = "") {
   `;
 }
 
-export default router;
+export default handleRouteErrors(router);

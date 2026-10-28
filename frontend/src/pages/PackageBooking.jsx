@@ -5,6 +5,7 @@ import api from "../api";
 import { heroImages } from "../assets/images/imageCatalog";
 import { useAuth } from "../context/AuthContext";
 import { formatLkr, tourToPackage } from "../data/tourPackages";
+import { earliestTravelDate } from "../utils/travelDate";
 
 export default function PackageBooking() {
   const { packageId } = useParams();
@@ -28,6 +29,7 @@ export default function PackageBooking() {
   });
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
+  const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -66,6 +68,7 @@ export default function PackageBooking() {
 
   async function submit(e) {
     e.preventDefault();
+    if (submitting) return;
     setError("");
     setMessage("");
 
@@ -75,6 +78,7 @@ export default function PackageBooking() {
       return;
     }
 
+    setSubmitting(true);
     try {
       await api.post("/package-bookings", {
         packageId: tourPackage.id,
@@ -87,7 +91,7 @@ export default function PackageBooking() {
       setForm(current => ({ ...current, bookingDate: "", adults: 1, children: 0, infants: 0, pickupLocation: "", contactPhone: "", specialRequests: "" }));
     } catch (err) {
       setError(err.response?.data?.message || "Booking request failed");
-    }
+    } finally { setSubmitting(false); }
   }
 
   const basePrice = tourPackage.basePrice ?? (Number(tourPackage.price.replace(/[^\d.]/g, "")) || 0);
@@ -106,22 +110,22 @@ export default function PackageBooking() {
         <form onSubmit={submit} className="card p-8">
           <h2 className="text-3xl font-black">Contact information</h2>
           <div className="mt-7 grid md:grid-cols-2 gap-5">
-            <label>Full name<input required value={form.contactName} onChange={e => setForm({...form, contactName: e.target.value})} /></label>
-            <label>Email<input required type="email" value={form.contactEmail} onChange={e => setForm({...form, contactEmail: e.target.value})} /></label>
-            <label>Phone number<input required value={form.contactPhone} onChange={e => setForm({...form, contactPhone: e.target.value})} placeholder="+94..." /></label>
-            <label>Travel date<input required type="date" value={form.bookingDate} onChange={e => setForm({...form, bookingDate: e.target.value})} /></label>
-            <label className="md:col-span-2">Exact pickup location<input required value={form.pickupLocation} onChange={e => setForm({...form, pickupLocation: e.target.value})} placeholder="Hotel name, address, or landmark" /></label>
+            <label>Full name<input required maxLength={120} value={form.contactName} onChange={e => setForm({...form, contactName: e.target.value})} /></label>
+            <label>Email<input required type="email" maxLength={180} value={form.contactEmail} onChange={e => setForm({...form, contactEmail: e.target.value})} /></label>
+            <label>Phone number<input required type="tel" maxLength={40} minLength={7} value={form.contactPhone} onChange={e => setForm({...form, contactPhone: e.target.value})} placeholder="+94..." /></label>
+            <label>Travel date<input required type="date" min={earliestTravelDate()} value={form.bookingDate} onChange={e => setForm({...form, bookingDate: e.target.value})} /></label>
+            <label className="md:col-span-2">Exact pickup location<input required maxLength={255} value={form.pickupLocation} onChange={e => setForm({...form, pickupLocation: e.target.value})} placeholder="Hotel name, address, or landmark" /></label>
             <label>Adults<input required type="number" min="1" max={tourPackage.maxGuests} value={form.adults} onChange={e => setForm({...form, adults: Number(e.target.value)})} /></label>
             <label>Children age 4-12<input required type="number" min="0" max={tourPackage.maxGuests} value={form.children} onChange={e => setForm({...form, children: Number(e.target.value)})} /></label>
             <label>Children below 3<input required type="number" min="0" max={tourPackage.maxGuests} value={form.infants} onChange={e => setForm({...form, infants: Number(e.target.value)})} /></label>
-            <label className="md:col-span-2">Special requests<textarea rows="5" value={form.specialRequests} onChange={e => setForm({...form, specialRequests: e.target.value})} placeholder="Preferred time, dietary needs, or anything our team should know..." /></label>
+            <label className="md:col-span-2">Special requests<textarea maxLength={2000} rows="5" value={form.specialRequests} onChange={e => setForm({...form, specialRequests: e.target.value})} placeholder="Preferred time, dietary needs, or anything our team should know..." /></label>
           </div>
           <p className="mt-5 rounded-xl bg-slate-50 p-4 text-sm font-semibold text-slate-700">
             Estimated total: <b>{formatLkr(estimatedTotal)}</b> · Children below 3 travel free
           </p>
           {message && <p className="mt-5 rounded-xl bg-teal-50 p-4 text-sm font-bold text-emerald-700">{message}</p>}
           {error && <p className="mt-5 rounded-xl bg-red-50 p-4 text-sm font-bold text-red-600">{error}</p>}
-          <button className="btn-primary mt-7 w-full justify-center">Submit Booking Request</button>
+          <button disabled={submitting} className="btn-primary mt-7 w-full justify-center">{submitting ? "Submitting..." : "Submit Booking Request"}</button>
         </form>
 
         <aside className="card overflow-hidden h-fit">

@@ -7,7 +7,7 @@ export function buildTourQuery(query, adminView = false) {
   if (query.category && query.category !== "all") { where.push("category = ?"); values.push(query.category); }
   if (query.featured === "true") where.push("featured = true");
   const durations = { short: "Short tour", 1: "1 Day", 2: "2 Days", 3: "3 Days" };
-  if (durations[query.duration]) { where.push("duration = ?"); values.push(durations[query.duration]); }
+  if (Object.hasOwn(durations, query.duration)) { where.push("duration = ?"); values.push(durations[query.duration]); }
   if (typeof query.q === "string" && query.q.trim()) {
     const term = `%${query.q.trim().slice(0, 180).replace(/[!%_]/g, match => `!${match}`)}%`;
     where.push("(title LIKE ? ESCAPE '!' OR location LIKE ? ESCAPE '!' OR short_description LIKE ? ESCAPE '!')");

@@ -3,6 +3,7 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import api from "../api";
 import { useAuth } from "../context/AuthContext";
 import { tourImageUrl } from "../utils/tourImage";
+import { earliestTravelDate } from "../utils/travelDate";
 
 export default function TourDetails() {
   const { id } = useParams();
@@ -19,16 +20,26 @@ export default function TourDetails() {
     specialRequests: ""
   });
   const [message, setMessage] = useState("");
+  const [loadError, setLoadError] = useState("");
+  const [retryKey, setRetryKey] = useState(0);
+  const [submitting, setSubmitting] = useState(false);
+  const [bookingError, setBookingError] = useState(false);
 
   useEffect(() => {
-    api.get(`/tours/${id}`).then(res => setTour({ ...res.data, image: tourImageUrl(res.data.image) })).catch(console.error);
-  }, [id]);
+    let cancelled = false;
+    setTour(null); setLoadError("");
+    api.get(`/tours/${id}`).then(res => { if (!cancelled) setTour({ ...res.data, image: tourImageUrl(res.data.image) }); })
+      .catch(err => { if (!cancelled) setLoadError(err.response?.status === 404 ? "This tour is no longer available." : "Unable to load this tour. Please try again."); });
+    return () => { cancelled = true; };
+  }, [id, retryKey]);
 
-  if (!tour) return <div className="container-page py-20">Loading tour...</div>;
+  if (!tour) return <div className="container-page pt-44 pb-20">{loadError ? <div role="alert"><p>{loadError}</p><button type="button" onClick={() => setRetryKey(key => key + 1)} className="btn-outline mt-4">Try again</button><Link to="/packages" className="btn-outline mt-4 ml-3">Back to packages</Link></div> : <p role="status">Loading tour...</p>}</div>;
 
   async function book(e) {
     e.preventDefault();
+    if (submitting) return;
     if (!user) return navigate("/login");
+    setSubmitting(true); setMessage(""); setBookingError(false);
     try {
       await api.post("/package-bookings", {
         ...form,
@@ -39,8 +50,9 @@ export default function TourDetails() {
       setMessage("Booking request submitted successfully!");
       setForm({ bookingDate: "", adults: 1, children: 0, infants: 0, pickupLocation: "", contactPhone: "", specialRequests: "" });
     } catch (error) {
+      setBookingError(true);
       setMessage(error.response?.data?.message || "Booking failed");
-    }
+    } finally { setSubmitting(false); }
   }
 
   const totalGuests = Number(form.adults || 0) + Number(form.children || 0) + Number(form.infants || 0);
@@ -72,20 +84,20 @@ export default function TourDetails() {
           <p className="text-3xl font-black">LKR {tour.price.toLocaleString()}</p>
           <p className="text-sm text-slate-500">per guest</p>
           <form onSubmit={book} className="mt-6 space-y-4">
-            <label>Travel date<input required type="date" value={form.bookingDate} onChange={e => setForm({...form, bookingDate: e.target.value})} /></label>
-            <label>Exact pickup location<input required value={form.pickupLocation} onChange={e => setForm({...form, pickupLocation: e.target.value})} placeholder="Hotel name, address, or landmark" /></label>
+            <label>Travel date<input required type="date" min={earliestTravelDate()} value={form.bookingDate} onChange={e => setForm({...form, bookingDate: e.target.value})} /></label>
+            <label>Exact pickup location<input required maxLength={255} value={form.pickupLocation} onChange={e => setForm({...form, pickupLocation: e.target.value})} placeholder="Hotel name, address, or landmark" /></label>
             <div className="grid grid-cols-3 gap-3">
               <label>Adults<input required type="number" min="1" max={tour.maxGuests} value={form.adults} onChange={e => setForm({...form, adults: Number(e.target.value)})} /></label>
               <label>Children 4-12<input required type="number" min="0" max={tour.maxGuests} value={form.children} onChange={e => setForm({...form, children: Number(e.target.value)})} /></label>
               <label>Below 3<input required type="number" min="0" max={tour.maxGuests} value={form.infants} onChange={e => setForm({...form, infants: Number(e.target.value)})} /></label>
             </div>
-            <label>Phone<input required value={form.contactPhone} onChange={e => setForm({...form, contactPhone: e.target.value})} placeholder="+94..." /></label>
-            <label>Special requests<textarea value={form.specialRequests} onChange={e => setForm({...form, specialRequests: e.target.value})} rows="3" /></label>
+            <label>Phone<input required type="tel" maxLength={40} minLength={7} value={form.contactPhone} onChange={e => setForm({...form, contactPhone: e.target.value})} placeholder="+94..." /></label>
+            <label>Special requests<textarea maxLength={2000} value={form.specialRequests} onChange={e => setForm({...form, specialRequests: e.target.value})} rows="3" /></label>
             <p className="rounded-xl bg-slate-50 p-3 text-sm font-semibold text-slate-700">
               Guests: {totalGuests} · Estimated total: <b>LKR {estimatedTotal.toLocaleString()}</b>
             </p>
-            {message && <p className="text-sm font-semibold text-emerald-700">{message}</p>}
-            <button className="btn-primary w-full justify-center">Request Booking</button>
+            {message && <p role={bookingError ? "alert" : "status"} className={`text-sm font-semibold ${bookingError ? "text-red-600" : "text-emerald-700"}`}>{message}</p>}
+            <button disabled={submitting} className="btn-primary w-full justify-center">{submitting ? "Submitting..." : "Request Booking"}</button>
           </form>
           {!user && <p className="mt-3 text-xs text-slate-500 text-center">You will be asked to log in before booking.</p>}
         </aside>

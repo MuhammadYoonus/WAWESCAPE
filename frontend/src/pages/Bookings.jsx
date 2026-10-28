@@ -9,13 +9,24 @@ export default function Bookings() {
   const { user } = useAuth();
   const [bookings, setBookings] = useState([]);
   const [packageBookings, setPackageBookings] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [retryKey, setRetryKey] = useState(0);
 
   useEffect(() => {
+    let cancelled = false;
     if (user) {
-      api.get("/bookings/mine").then(res => setBookings(res.data));
-      api.get("/package-bookings/mine").then(res => setPackageBookings(res.data));
+      setLoading(true); setError("");
+      Promise.allSettled([api.get("/bookings/mine"), api.get("/package-bookings/mine")]).then(results => {
+        if (cancelled) return;
+        if (results[0].status === "fulfilled") setBookings(results[0].value.data);
+        if (results[1].status === "fulfilled") setPackageBookings(results[1].value.data);
+        if (results.some(result => result.status === "rejected")) setError("Some bookings could not be loaded. Please try again.");
+        setLoading(false);
+      });
     }
-  }, [user]);
+    return () => { cancelled = true; };
+  }, [user, retryKey]);
 
   if (!user) return <Navigate to="/login" />;
   const hasBookings = bookings.length || packageBookings.length;
@@ -30,10 +41,12 @@ export default function Bookings() {
     />
     <section className="container-page py-14">
       <div className="space-y-5">
-        {!hasBookings && <div className="card p-8 text-center">No bookings yet. <Link to="/packages" className="text-emerald-700 font-bold">Explore tour packages</Link></div>}
+        {loading && <p role="status">Loading your bookings...</p>}
+        {error && <div role="alert" className="card p-5"><p className="text-red-600">{error}</p><button className="btn-outline mt-3" onClick={() => setRetryKey(key => key + 1)}>Retry bookings</button></div>}
+        {!loading && !error && !hasBookings && <div className="card p-8 text-center">No bookings yet. <Link to="/packages" className="text-emerald-700 font-bold">Explore tour packages</Link></div>}
         {bookings.map(b => <div className="card p-5 flex flex-col md:flex-row gap-5" key={b._id}>
-          <img src={b.tour.image} className="w-full md:w-40 h-28 object-cover rounded-xl" />
-          <div className="flex-1"><h2 className="font-bold text-xl">{b.tour.title}</h2><p className="text-slate-500">{b.tour.location} · {new Date(b.bookingDate).toLocaleDateString()}</p><p className="mt-2">Guests: {b.guests} ({guestSummary(b)}) · Total: <b>LKR {b.totalPrice.toLocaleString()}</b></p><p className="mt-1 text-sm text-slate-500">Pickup: {b.pickupLocation || "Not provided"}</p></div>
+          <img src={b.tour?.image || heroImages.bookings} alt={b.tour?.title || "Booked tour"} className="w-full md:w-40 h-28 object-cover rounded-xl" />
+          <div className="flex-1"><h2 className="font-bold text-xl">{b.tour?.title || "Unavailable tour"}</h2><p className="text-slate-500">{b.tour?.location} · {new Date(b.bookingDate).toLocaleDateString()}</p><p className="mt-2">Guests: {b.guests} ({guestSummary(b)}) · Total: <b>LKR {b.totalPrice.toLocaleString()}</b></p><p className="mt-1 text-sm text-slate-500">Pickup: {b.pickupLocation || "Not provided"}</p></div>
           <span className="badge h-fit">{b.status}</span>
         </div>)}
         {packageBookings.map(b => <div className="card p-5 flex flex-col md:flex-row gap-5" key={`package-${b._id}`}>

@@ -12,40 +12,52 @@ export default function Admin() {
   const [packageBookings, setPackageBookings] = useState([]);
   const [inquiries, setInquiries] = useState([]);
   const [feedbackItems, setFeedbackItems] = useState([]);
+  const [dataError, setDataError] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [retryKey, setRetryKey] = useState(0);
 
   useEffect(() => {
+    let cancelled = false;
     if (user?.role === "admin") {
-      api.get("/bookings").then(res => setBookings(res.data));
-      api.get("/package-bookings").then(res => setPackageBookings(res.data));
-      api.get("/inquiries").then(res => setInquiries(res.data));
-      api.get("/feedback?admin=true").then(res => setFeedbackItems(res.data));
+      setLoading(true); setDataError("");
+      Promise.allSettled([api.get("/bookings"), api.get("/package-bookings"), api.get("/inquiries"), api.get("/feedback?admin=true")]).then(results => {
+        if (cancelled) return;
+        const setters = [setBookings, setPackageBookings, setInquiries, setFeedbackItems];
+        results.forEach((result, index) => { if (result.status === "fulfilled") setters[index](result.value.data); });
+        if (results.some(result => result.status === "rejected")) setDataError("Some dashboard records could not be loaded. Please retry.");
+        setLoading(false);
+      });
     }
-  }, [user]);
+    return () => { cancelled = true; };
+  }, [user, retryKey]);
 
-  if (user?.role !== "admin") return <Navigate to="/" />;
+  if (user?.role !== "admin") return <Navigate to={user ? "/" : "/login"} />;
   const allBookings = [
     ...bookings.map(booking => ({ ...booking, kind: "tour" })),
     ...packageBookings.map(booking => ({ ...booking, kind: "package" }))
   ];
 
+  async function saveStatus(url, status, success) {
+    setDataError("");
+    try { await api.put(url, { status }); success(); }
+    catch (err) { setDataError(err.response?.data?.message || "The status could not be saved. Please try again."); }
+  }
+
   async function updateStatus(id, status, kind) {
     const url = kind === "package" ? `/package-bookings/${id}/status` : `/bookings/${id}/status`;
-    await api.put(url, { status });
-    if (kind === "package") {
+    await saveStatus(url, status, () => { if (kind === "package") {
       setPackageBookings(bs => bs.map(b => b._id === id ? {...b, status} : b));
     } else {
       setBookings(bs => bs.map(b => b._id === id ? {...b, status} : b));
-    }
+    } });
   }
 
   async function updateInquiryStatus(id, status) {
-    await api.put(`/inquiries/${id}/status`, { status });
-    setInquiries(items => items.map(item => item._id === id ? {...item, status} : item));
+    await saveStatus(`/inquiries/${id}/status`, status, () => setInquiries(items => items.map(item => item._id === id ? {...item, status} : item)));
   }
 
   async function updateFeedbackStatus(id, status) {
-    await api.put(`/feedback/${id}/status`, { status });
-    setFeedbackItems(items => items.map(item => item._id === id ? {...item, status} : item));
+    await saveStatus(`/feedback/${id}/status`, status, () => setFeedbackItems(items => items.map(item => item._id === id ? {...item, status} : item)));
   }
 
   function customerName(booking) {
@@ -72,6 +84,8 @@ export default function Admin() {
     image={heroImages.destinations}
   />
   <section className="container-page py-14">
+    {loading && <p role="status" className="mb-5">Loading dashboard records...</p>}
+    {dataError && <div role="alert" className="mb-5 rounded-xl bg-red-50 p-4"><p className="text-red-600">{dataError}</p><button type="button" className="btn-outline mt-3" onClick={() => setRetryKey(key => key + 1)}>Retry dashboard</button></div>}
     <div className="grid md:grid-cols-4 gap-5">
       <div className="card p-6"><p className="text-slate-500">Total bookings</p><p className="text-4xl font-black mt-2">{allBookings.length}</p></div>
       <div className="card p-6"><p className="text-slate-500">Pending</p><p className="text-4xl font-black mt-2">{allBookings.filter(b=>b.status==="pending").length}</p></div>

@@ -1,64 +1,27 @@
+import { handleRouteErrors } from "../middleware/errors.js";
 import express from "express";
 import { protect, adminOnly } from "../middleware/auth.js";
 import { mapPackageBooking, mapTour, pool } from "../db.js";
 import { sendBookingConfirmation } from "../services/notificationService.js";
+import { bookingInput, choice, email, resourceId, text, ValidationError } from "../utils/validation.js";
 
 const router = express.Router();
 
 router.post("/", protect, async (req, res) => {
   try {
-    const {
-      packageId,
-      packageTitle,
-      packageRoute,
-      packagePrice,
-      bookingDate,
-      adults,
-      children,
-      infants,
-      pickupLocation,
-      contactName,
-      contactEmail,
-      contactPhone,
-      specialRequests
-    } = req.body;
-    const adultCount = Number(adults || 0);
-    const childCount = Number(children || 0);
-    const infantCount = Number(infants || 0);
-    const guestCount = adultCount + childCount + infantCount;
-    let title = packageTitle;
-    let route = packageRoute;
-    let price = packagePrice;
-    let basePrice = priceFromText(price);
+    const packageId = text(req.body?.packageId, "Package", 120);
+    const byId = packageId.startsWith("tour-");
+    const lookup = byId ? resourceId(packageId.slice(5)) : packageId;
+    const [tourRows] = await pool.query(`SELECT * FROM tours WHERE ${byId ? "id" : "slug"} = ? AND active = true`, [lookup]);
+    const tour = mapTour(tourRows[0]);
+    if (!tour) return res.status(404).json({ message: "Tour package is no longer available" });
+    const { adults: adultCount, children: childCount, infants: infantCount, guests: guestCount,
+      bookingDate, pickupLocation, contactPhone, specialRequests } = bookingInput(req.body, tour.maxGuests);
+    const contactName = text(req.body.contactName, "Contact name", 120);
+    const contactEmail = email(req.body.contactEmail);
+    const { title, location: route, price: basePrice, _id: tourId } = tour;
+    const price = `LKR ${basePrice.toFixed(2)}`;
     const chargeableGuests = adultCount + childCount * 0.75;
-
-    // Published tours use their saved details; prices sent by the browser are not trusted.
-    let tourId;
-    {
-      const byId = typeof packageId === "string" && packageId.startsWith("tour-");
-      const [tourRows] = await pool.query(`SELECT * FROM tours WHERE ${byId ? "id" : "slug"} = ? AND active = true`, [byId ? packageId.slice(5) : packageId]);
-      const tour = mapTour(tourRows[0]);
-      if (!tour) return res.status(404).json({ message: "Tour package is no longer available" });
-      if (![adultCount, childCount, infantCount].every(Number.isInteger) || childCount < 0 || infantCount < 0) {
-        return res.status(400).json({ message: "Guest counts must be nonnegative whole numbers" });
-      }
-      if (guestCount > tour.maxGuests) {
-        return res.status(400).json({ message: `This tour allows a maximum of ${tour.maxGuests} guests` });
-      }
-      title = tour.title;
-      route = tour.location;
-      basePrice = tour.price;
-      price = `LKR ${tour.price.toFixed(2)}`;
-      tourId = tour._id;
-    }
-
-    if (!packageId || !title || !bookingDate || !contactName || !contactEmail || !contactPhone || !pickupLocation) {
-      return res.status(400).json({ message: "Please complete all required booking details" });
-    }
-
-    if (adultCount < 1) {
-      return res.status(400).json({ message: "At least one adult is required for a booking" });
-    }
 
     const [result] = await pool.query(
       `INSERT INTO package_bookings
@@ -92,7 +55,8 @@ router.post("/", protect, async (req, res) => {
     });
     res.status(201).json(booking);
   } catch (error) {
-    res.status(400).json({ message: error.message });
+    if (error instanceof ValidationError) return res.status(400).json({ message: error.message });
+    throw error;
   }
 });
 
@@ -110,7 +74,8 @@ router.get("/", protect, adminOnly, async (req, res) => {
 });
 
 router.put("/:id/status", protect, adminOnly, async (req, res) => {
-  await pool.query("UPDATE package_bookings SET status = ? WHERE id = ?", [req.body.status, req.params.id]);
+  const status = choice(req.body?.status, ["pending", "confirmed", "cancelled", "completed"], "Booking status");
+  await pool.query("UPDATE package_bookings SET status = ? WHERE id = ?", [status, req.params.id]);
   const [rows] = await pool.query(packageBookingJoinQuery("WHERE pb.id = ?"), [req.params.id]);
   const booking = mapPackageBooking(rows[0]);
   if (!booking) return res.status(404).json({ message: "Package booking not found" });
@@ -130,9 +95,4 @@ function packageBookingJoinQuery(suffix = "") {
   `;
 }
 
-function priceFromText(value = "") {
-  const number = String(value).replace(/[^\d.]/g, "");
-  return number ? Number(number) : 0;
-}
-
-export default router;
+export default handleRouteErrors(router);

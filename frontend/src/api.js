@@ -10,4 +10,13 @@ api.interceptors.request.use(config => {
   return config;
 });
 
+api.interceptors.response.use(response => response, error => {
+  if (error.response?.status === 401 && !error.config?.url?.startsWith("/auth/")) {
+    localStorage.removeItem("wavecape_token");
+    localStorage.removeItem("wavecape_user");
+    window.dispatchEvent(new Event("auth-expired"));
+  }
+  return Promise.reject(error);
+});
+
 export default api;

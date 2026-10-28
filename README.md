@@ -78,6 +78,8 @@ The Admin dashboard lists published and hidden tours. **Edit** loads the package
 
 Both the public catalogue and admin list support database searches by name, location and description, duration filters, and price/name/newest sorting. The admin list also filters by visibility. Public search settings are kept in the URL so results can be revisited or shared.
 
+Server validation checks real calendar dates (today or later in Sri Lanka), valid contact emails/phone numbers, nonnegative integer guest counts, capacity, field lengths and allowed statuses. Booking prices always come from the stored tour. Async failures return JSON messages; dashboards and booking history offer retry controls, and expired sessions are cleared safely.
+
 ## Database compatibility
 
 Startup creates the required tables and upgrades older `trips`-based booking tables without deleting their records. Referenced legacy trips are copied into separate archived tour records; their numeric IDs are never assumed to identify a current tour. New tour bookings reference `tours` and retain special requests. Re-running the seed command adds missing sample tours without clearing bookings or overwriting existing tours.

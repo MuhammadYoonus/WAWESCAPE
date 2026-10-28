@@ -1,3 +1,4 @@
+import { handleRouteErrors } from "../middleware/errors.js";
 import express from "express";
 import { protect, adminOnly } from "../middleware/auth.js";
 import { mapTour, pool } from "../db.js";
@@ -15,7 +16,7 @@ router.get("/", (req, res, next) => {
     const [rows] = await pool.query(sql, values);
     res.json(rows.map(mapTour));
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    throw error;
   }
 });
 
@@ -29,12 +30,12 @@ router.get("/slug/:slug", async (req, res) => {
 
 router.get("/:id", async (req, res) => {
   try {
-    const [rows] = await pool.query("SELECT * FROM tours WHERE id = ?", [req.params.id]);
+    const [rows] = await pool.query("SELECT * FROM tours WHERE id = ? AND active = true", [req.params.id]);
     const tour = mapTour(rows[0]);
     if (!tour) return res.status(404).json({ message: "Tour not found" });
     res.json(tour);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    throw error;
   }
 });
 
@@ -113,4 +114,4 @@ function respondToSaveError(res, error) {
   return res.status(500).json({ message: "Unable to save the tour. Please try again." });
 }
 
-export default router;
+export default handleRouteErrors(router);

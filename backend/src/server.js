@@ -10,6 +10,7 @@ import packageBookingRoutes from "./routes/packageBookingRoutes.js";
 import inquiryRoutes from "./routes/inquiryRoutes.js";
 import feedbackRoutes from "./routes/feedbackRoutes.js";
 import { initDb } from "./db.js";
+import { errorHandler } from "./middleware/errors.js";
 
 dotenv.config();
 
@@ -43,6 +44,8 @@ app.use("/api/bookings", bookingRoutes);
 app.use("/api/package-bookings", packageBookingRoutes);
 app.use("/api/inquiries", inquiryRoutes);
 app.use("/api/feedback", feedbackRoutes);
+app.use("/api", (req, res) => res.status(404).json({ message: "API endpoint not found" }));
+app.use(errorHandler);
 
 const PORT = process.env.PORT || 5001;
 

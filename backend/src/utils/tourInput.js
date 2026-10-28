@@ -21,6 +21,7 @@ function stringList(value, label) {
 }
 
 export function normalizeTourInput(body = {}) {
+  if (!body || typeof body !== "object" || Array.isArray(body)) throw new TourValidationError("Enter the tour details");
   const title = requiredText(body.title, "Tour name", 180);
   const generatedSlug = title.normalize("NFKD").replace(/[\u0300-\u036f]/g, "")
     .toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");

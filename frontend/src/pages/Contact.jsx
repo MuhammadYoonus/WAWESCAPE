@@ -7,19 +7,22 @@ export default function Contact() {
   const [form, setForm] = useState({ name: "", email: "", tourInterest: "", message: "" });
   const [status, setStatus] = useState("");
   const [error, setError] = useState("");
+  const [submitting, setSubmitting] = useState(false);
 
   async function submit(e) {
     e.preventDefault();
+    if (submitting) return;
     setStatus("");
     setError("");
 
+    setSubmitting(true);
     try {
       await api.post("/inquiries", form);
       setStatus("Inquiry submitted successfully. Our team will contact you soon.");
       setForm({ name: "", email: "", tourInterest: "", message: "" });
     } catch (err) {
       setError(err.response?.data?.message || "Inquiry submission failed");
-    }
+    } finally { setSubmitting(false); }
   }
 
   return (
@@ -34,8 +37,8 @@ export default function Contact() {
         <div className="card p-8">
           <h2 className="text-3xl font-black">Send an inquiry</h2>
           <form onSubmit={submit} className="mt-7 grid gap-5">
-            <label>Name<input required value={form.name} onChange={e => setForm({...form, name: e.target.value})} placeholder="Your name" /></label>
-            <label>Email<input required type="email" value={form.email} onChange={e => setForm({...form, email: e.target.value})} placeholder="you@example.com" /></label>
+            <label>Name<input required maxLength={120} value={form.name} onChange={e => setForm({...form, name: e.target.value})} placeholder="Your name" /></label>
+            <label>Email<input required type="email" maxLength={180} value={form.email} onChange={e => setForm({...form, email: e.target.value})} placeholder="you@example.com" /></label>
             <label>Tour interest<select required value={form.tourInterest} onChange={e => setForm({...form, tourInterest: e.target.value})}>
               <option value="" disabled>Select package type</option>
               <option>1 day tour</option>
@@ -44,10 +47,10 @@ export default function Contact() {
               <option>Short tour</option>
               <option>Custom Sri Lanka tour</option>
             </select></label>
-            <label>Message<textarea required rows="5" value={form.message} onChange={e => setForm({...form, message: e.target.value})} placeholder="Tell us your dates, destination ideas and group size." /></label>
+            <label>Message<textarea required maxLength={4000} rows="5" value={form.message} onChange={e => setForm({...form, message: e.target.value})} placeholder="Tell us your dates, destination ideas and group size." /></label>
             {status && <p className="rounded-xl bg-teal-50 p-4 text-sm font-bold text-emerald-700">{status}</p>}
             {error && <p className="rounded-xl bg-red-50 p-4 text-sm font-bold text-red-600">{error}</p>}
-            <button className="btn-primary justify-center">Submit Inquiry</button>
+            <button disabled={submitting} className="btn-primary justify-center">Submit Inquiry</button>
           </form>
         </div>
         <aside className="card p-8 h-fit">

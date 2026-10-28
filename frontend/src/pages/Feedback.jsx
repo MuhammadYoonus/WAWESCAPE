@@ -9,6 +9,7 @@ export default function Feedback() {
   const [form, setForm] = useState({ name: "", email: "", trip: "", rating: 5, text: "" });
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
+  const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
     api.get("/feedback").then(res => setLiveFeedbacks(res.data)).catch(console.error);
@@ -18,9 +19,11 @@ export default function Feedback() {
 
   async function submit(e) {
     e.preventDefault();
+    if (submitting) return;
     setMessage("");
     setError("");
 
+    setSubmitting(true);
     try {
       const { data } = await api.post("/feedback", form);
       setLiveFeedbacks(items => [data, ...items]);
@@ -28,7 +31,7 @@ export default function Feedback() {
       setMessage("Thank you. Your feedback was submitted successfully.");
     } catch (err) {
       setError(err.response?.data?.message || "Feedback submission failed");
-    }
+    } finally { setSubmitting(false); }
   }
 
   return (
@@ -61,9 +64,9 @@ export default function Feedback() {
         <form onSubmit={submit} className="card p-8 h-fit">
           <h2 className="text-3xl font-black">Share feedback</h2>
           <div className="mt-7 grid gap-5">
-            <label>Name<input required value={form.name} onChange={e => setForm({...form, name: e.target.value})} placeholder="Your name" /></label>
-            <label>Email<input type="email" value={form.email} onChange={e => setForm({...form, email: e.target.value})} placeholder="you@example.com" /></label>
-            <label>Tour / package<input required value={form.trip} onChange={e => setForm({...form, trip: e.target.value})} placeholder="Mirissa Whale Watching" /></label>
+            <label>Name<input required maxLength={120} value={form.name} onChange={e => setForm({...form, name: e.target.value})} placeholder="Your name" /></label>
+            <label>Email<input type="email" maxLength={180} value={form.email} onChange={e => setForm({...form, email: e.target.value})} placeholder="you@example.com" /></label>
+            <label>Tour / package<input required maxLength={180} value={form.trip} onChange={e => setForm({...form, trip: e.target.value})} placeholder="Mirissa Whale Watching" /></label>
             <label>Rating<select required value={form.rating} onChange={e => setForm({...form, rating: Number(e.target.value)})}>
               <option value={5}>5 - Excellent</option>
               <option value={4}>4 - Very good</option>
@@ -71,11 +74,11 @@ export default function Feedback() {
               <option value={2}>2 - Fair</option>
               <option value={1}>1 - Poor</option>
             </select></label>
-            <label>Feedback<textarea required rows="5" value={form.text} onChange={e => setForm({...form, text: e.target.value})} placeholder="Tell us about your travel experience." /></label>
+            <label>Feedback<textarea required maxLength={4000} rows="5" value={form.text} onChange={e => setForm({...form, text: e.target.value})} placeholder="Tell us about your travel experience." /></label>
           </div>
           {message && <p className="mt-5 rounded-xl bg-teal-50 p-4 text-sm font-bold text-emerald-700">{message}</p>}
-          {error && <p className="mt-5 rounded-xl bg-red-50 p-4 text-sm font-bold text-red-600">{error}</p>}
-          <button className="btn-primary mt-6 w-full justify-center">Submit Feedback</button>
+          {error && <p role="alert" className="mt-5 rounded-xl bg-red-50 p-4 text-sm font-bold text-red-600">{error}</p>}
+          <button disabled={submitting} className="btn-primary mt-6 w-full justify-center">Submit Feedback</button>
         </form>
       </div>
 
