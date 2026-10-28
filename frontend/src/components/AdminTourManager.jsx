@@ -17,11 +17,13 @@ export default function AdminTourManager() {
   const [visibility, setVisibility] = useState("all");
   const [sort, setSort] = useState("newest");
   const formRef = useRef(null);
+  const requestRef = useRef(0);
   const load = useCallback(async () => {
+    const request = ++requestRef.current;
     setLoading(true); setError("");
-    try { setTours((await api.get("/tours", { params: { admin: true, q: query, duration, visibility, sort } })).data); }
-    catch { setError("Unable to load tour packages. Please try again."); }
-    finally { setLoading(false); }
+    try { const response = await api.get("/tours", { params: { admin: true, q: query, duration, visibility, sort } }); if (request === requestRef.current) setTours(response.data); }
+    catch { if (request === requestRef.current) setError("Unable to load tour packages. Please try again."); }
+    finally { if (request === requestRef.current) setLoading(false); }
   }, [query, duration, visibility, sort]);
   useEffect(() => { const timer = setTimeout(load, 200); return () => clearTimeout(timer); }, [load]);
 
@@ -70,7 +72,13 @@ export default function AdminTourManager() {
     </section>
     <div ref={formRef} className="scroll-mt-36"><AdminTourForm tour={editing} onCancel={() => setEditing(null)} onSaved={(tour, updated) => { setMessage(`${tour.title} was ${updated ? "updated" : "added"}.`); setEditing(null); load(); }} /></div>
     {deleting && <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/60 p-5" onKeyDown={event => { if (event.key === "Escape" && !busy) setDeleting(null); }}>
-      <div role="dialog" aria-modal="true" aria-labelledby="delete-tour-title" className="card w-full max-w-lg p-6">
+      <div role="dialog" aria-modal="true" aria-labelledby="delete-tour-title" className="card w-full max-w-lg p-6" onKeyDown={event => {
+        if (event.key !== "Tab") return;
+        const buttons = event.currentTarget.querySelectorAll("button:not(:disabled)");
+        const first = buttons[0], last = buttons[buttons.length - 1];
+        if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last?.focus(); }
+        else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first?.focus(); }
+      }}>
         <h2 id="delete-tour-title" className="text-2xl font-black">Delete {deleting.title}?</h2>
         <p className="mt-4 text-slate-600">This permanently removes the tour package. Tours with bookings cannot be deleted; you can hide them instead.</p>
         {error && <p role="alert" className="mt-4 text-red-600">{error}</p>}

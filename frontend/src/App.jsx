@@ -1,4 +1,4 @@
-import { Routes, Route } from "react-router-dom";
+import { Link, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
@@ -37,6 +37,7 @@ export default function App() {
           <Route path="/register" element={<Register />} />
           <Route path="/bookings" element={<Bookings />} />
           <Route path="/admin" element={<Admin />} />
+          <Route path="*" element={<section className="container-page py-20 text-center"><h1 className="text-4xl font-black">Page not found</h1><p className="mt-4 text-slate-600">The page you requested is not available.</p><Link to="/packages" className="btn-primary mt-6">Browse tour packages</Link></section>} />
         </Routes>
       </main>
       <Footer />

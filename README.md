@@ -80,6 +80,8 @@ Both the public catalogue and admin list support database searches by name, loca
 
 Server validation checks real calendar dates (today or later in Sri Lanka), valid contact emails/phone numbers, nonnegative integer guest counts, capacity, field lengths and allowed statuses. Booking prices always come from the stored tour. Async failures return JSON messages; dashboards and booking history offer retry controls, and expired sessions are cleared safely.
 
+On small screens the navigation collapses into a labeled menu. The sticky header occupies its own layout space, keeping login headings and hero content clear. Keyboard focus indicators, dialog focus containment and readable text contrast support accessible navigation.
+
 ## Database compatibility
 
 Startup creates the required tables and upgrades older `trips`-based booking tables without deleting their records. Referenced legacy trips are copied into separate archived tour records; their numeric IDs are never assumed to identify a current tour. New tour bookings reference `tours` and retain special requests. Re-running the seed command adds missing sample tours without clearing bookings or overwriting existing tours.
