@@ -15,6 +15,7 @@ process.env.TWILIO_ACCOUNT_SID = "";
 const { default: packageBookingRoutes } = await import("../src/routes/packageBookingRoutes.js");
 const { default: bookingRoutes } = await import("../src/routes/bookingRoutes.js");
 const originalQuery = pool.query;
+const originalGetConnection = pool.getConnection;
 let queryHandler;
 let server;
 let baseUrl;
@@ -32,6 +33,7 @@ const validTour = {
 
 before(async () => {
   pool.query = async (...args) => { queryCount++; return queryHandler(...args); };
+  pool.getConnection = async () => ({ query: pool.query, beginTransaction: async () => {}, commit: async () => {}, rollback: async () => {}, release() {} });
   const app = express();
   app.use(express.json());
   app.use("/api/tours", tourRoutes);
@@ -60,6 +62,7 @@ beforeEach(() => {
 
 after(async () => {
   pool.query = originalQuery;
+  pool.getConnection = originalGetConnection;
   await new Promise((resolve, reject) => server.close(error => error ? reject(error) : resolve()));
   await pool.end();
 });
@@ -188,4 +191,43 @@ test("tour bookings reference tours, persist special requests and reload the cor
   const items = await reloaded.json();
   assert.equal(items[0].tour.title, "Ella Mountain Escape");
   assert.equal(items[0].specialRequests, "Vegetarian lunch");
+});
+
+test("editing a tour changes the same public record and retains its identity", async () => {
+  await createTour();
+  const read = queryHandler;
+  queryHandler = async (sql, values) => {
+    if (sql.includes("UPDATE tours SET")) {
+      rows[0].title = values[0]; rows[0].price = values[5];
+      return [{ affectedRows: 1 }];
+    }
+    return read(sql, values);
+  };
+  const response = await fetch(`${baseUrl}/tours/42`, { method: "PUT", headers: { "Content-Type": "application/json", Authorization: `Bearer ${adminToken}` }, body: JSON.stringify({ ...validTour, title: "Updated Ella Tour", slug: "ella-mountain-escape", price: 21000 }) });
+  assert.equal(response.status, 200);
+  const updated = await response.json();
+  assert.equal(updated._id, "42"); assert.equal(updated.title, "Updated Ella Tour"); assert.equal(updated.price, 21000);
+});
+
+test("deletion protects booked tours and removes only an unbooked record", async () => {
+  await createTour();
+  const read = queryHandler;
+  let booked = 1;
+  queryHandler = async (sql, values) => {
+    if (sql.includes("SELECT id FROM tours")) return [[{ id: 42 }]];
+    if (sql.includes("AS total")) return [[{ total: booked }]];
+    if (sql.includes("DELETE FROM tours")) { rows = []; return [{ affectedRows: 1 }]; }
+    return read(sql, values);
+  };
+  const request = () => fetch(`${baseUrl}/tours/42`, { method: "DELETE", headers: { Authorization: `Bearer ${adminToken}` } });
+  assert.equal((await request()).status, 409);
+  assert.equal(rows.length, 1);
+  booked = 0;
+  assert.equal((await request()).status, 200);
+  assert.equal(rows.length, 0);
+});
+
+test("the management list requires admin access", async () => {
+  const response = await fetch(`${baseUrl}/tours?admin=true`, { headers: { Authorization: `Bearer ${customerToken}` } });
+  assert.equal(response.status, 403);
 });

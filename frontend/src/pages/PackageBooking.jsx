@@ -3,7 +3,6 @@ import { Link, Navigate, useParams } from "react-router-dom";
 import PageHero from "../components/PageHero";
 import api from "../api";
 import { heroImages } from "../assets/images/imageCatalog";
-import { packages } from "../data/travelContent";
 import { useAuth } from "../context/AuthContext";
 import { formatLkr, tourToPackage } from "../data/tourPackages";
 
@@ -12,12 +11,10 @@ export default function PackageBooking() {
   const { user } = useAuth();
   const isPublishedTour = packageId.startsWith("tour-");
   const [loadedTour, setLoadedTour] = useState(null);
-  const [loading, setLoading] = useState(isPublishedTour);
+  const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState("");
   const [retryKey, setRetryKey] = useState(0);
-  const tourPackage = isPublishedTour
-    ? (loadedTour?.id === packageId ? loadedTour : null)
-    : packages.find(item => item.id === packageId);
+  const tourPackage = loadedTour?.routeId === packageId ? loadedTour.package : null;
   const [form, setForm] = useState({
     bookingDate: "",
     adults: 1,
@@ -36,15 +33,11 @@ export default function PackageBooking() {
     let cancelled = false;
     setLoadError("");
     setLoadedTour(null);
-    if (!isPublishedTour) {
-      setLoading(false);
-      return;
-    }
     setLoading(true);
-    api.get(`/tours/${packageId.slice(5)}`)
+    api.get(isPublishedTour ? `/tours/${packageId.slice(5)}` : `/tours/slug/${encodeURIComponent(packageId)}`)
       .then(({ data }) => {
         if (!cancelled) {
-          if (data.active) setLoadedTour(tourToPackage(data));
+          if (data.active) setLoadedTour({ routeId: packageId, package: tourToPackage(data) });
           else setLoadError("This tour package is no longer available.");
         }
       })

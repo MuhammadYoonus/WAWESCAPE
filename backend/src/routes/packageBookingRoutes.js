@@ -33,8 +33,10 @@ router.post("/", protect, async (req, res) => {
     const chargeableGuests = adultCount + childCount * 0.75;
 
     // Published tours use their saved details; prices sent by the browser are not trusted.
-    if (typeof packageId === "string" && packageId.startsWith("tour-")) {
-      const [tourRows] = await pool.query("SELECT * FROM tours WHERE id = ? AND active = true", [packageId.slice(5)]);
+    let tourId;
+    {
+      const byId = typeof packageId === "string" && packageId.startsWith("tour-");
+      const [tourRows] = await pool.query(`SELECT * FROM tours WHERE ${byId ? "id" : "slug"} = ? AND active = true`, [byId ? packageId.slice(5) : packageId]);
       const tour = mapTour(tourRows[0]);
       if (!tour) return res.status(404).json({ message: "Tour package is no longer available" });
       if (![adultCount, childCount, infantCount].every(Number.isInteger) || childCount < 0 || infantCount < 0) {
@@ -47,6 +49,7 @@ router.post("/", protect, async (req, res) => {
       route = tour.location;
       basePrice = tour.price;
       price = `LKR ${tour.price.toFixed(2)}`;
+      tourId = tour._id;
     }
 
     if (!packageId || !title || !bookingDate || !contactName || !contactEmail || !contactPhone || !pickupLocation) {
@@ -59,8 +62,8 @@ router.post("/", protect, async (req, res) => {
 
     const [result] = await pool.query(
       `INSERT INTO package_bookings
-      (user_id, package_id, package_title, package_route, package_price, booking_date, guests, contact_name, contact_email, contact_phone, special_requests, pickup_location, adults, children, infants, total_amount)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      (user_id, package_id, package_title, package_route, package_price, booking_date, guests, contact_name, contact_email, contact_phone, special_requests, pickup_location, adults, children, infants, total_amount, tour_id)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [
         req.user.id,
         packageId,
@@ -77,7 +80,8 @@ router.post("/", protect, async (req, res) => {
         adultCount,
         childCount,
         infantCount,
-        basePrice ? basePrice * chargeableGuests : null
+        basePrice ? basePrice * chargeableGuests : null,
+        tourId
       ]
     );
 

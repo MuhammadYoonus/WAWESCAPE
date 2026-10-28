@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import api from "../api";
 import { useAuth } from "../context/AuthContext";
+import { tourImageUrl } from "../utils/tourImage";
 
 export default function TourDetails() {
   const { id } = useParams();
@@ -20,7 +21,7 @@ export default function TourDetails() {
   const [message, setMessage] = useState("");
 
   useEffect(() => {
-    api.get(`/tours/${id}`).then(res => setTour(res.data)).catch(console.error);
+    api.get(`/tours/${id}`).then(res => setTour({ ...res.data, image: tourImageUrl(res.data.image) })).catch(console.error);
   }, [id]);
 
   if (!tour) return <div className="container-page py-20">Loading tour...</div>;

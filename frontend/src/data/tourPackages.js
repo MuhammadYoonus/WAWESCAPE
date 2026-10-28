@@ -1,3 +1,5 @@
+import { tourImageUrl } from "../utils/tourImage.js";
+
 export const packageOptions = [
   ["short", "Short Tours"],
   ["1", "1 Day"],
@@ -27,7 +29,7 @@ export function tourToPackage(tour) {
     price: formatLkr(tour.price),
     basePrice: Number(tour.price),
     maxGuests: tour.maxGuests,
-    image: tour.image,
+    image: tourImageUrl(tour.image),
     description: tour.description,
     plan: plan.length ? plan : [tour.shortDescription]
   };

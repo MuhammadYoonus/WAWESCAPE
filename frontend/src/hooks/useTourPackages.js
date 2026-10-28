@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import api from "../api";
-import { packages } from "../data/travelContent";
-import { mergeTourPackages } from "../data/tourPackages";
+import { tourToPackage } from "../data/tourPackages";
+import { tourImageUrl } from "../utils/tourImage";
 
 export function useTourPackages() {
   const [tours, setTours] = useState([]);
@@ -15,7 +15,7 @@ export function useTourPackages() {
     setLoading(true);
     setError("");
     api.get("/tours")
-      .then(res => { if (!cancelled) setTours(res.data); })
+      .then(res => { if (!cancelled) setTours(res.data.map(tour => ({ ...tour, image: tourImageUrl(tour.image) }))); })
       .catch(() => { if (!cancelled) setError("New tour packages could not be loaded. Please try again."); })
       .finally(() => { if (!cancelled) setLoading(false); });
     return () => { cancelled = true; };
@@ -26,6 +26,6 @@ export function useTourPackages() {
     return () => window.removeEventListener("focus", refresh);
   }, [refresh]);
 
-  const allPackages = useMemo(() => mergeTourPackages(tours, packages), [tours]);
+  const allPackages = useMemo(() => tours.map(tourToPackage), [tours]);
   return { packages: allPackages, tours, loading, error, refresh };
 }

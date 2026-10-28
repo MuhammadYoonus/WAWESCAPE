@@ -5,9 +5,12 @@ import { normalizeTourInput, TourValidationError } from "../utils/tourInput.js";
 
 const router = express.Router();
 
-router.get("/", async (req, res) => {
+router.get("/", (req, res, next) => {
+  if (req.query.admin === "true") return protect(req, res, () => adminOnly(req, res, next));
+  next();
+}, async (req, res) => {
   try {
-    const where = ["active = true"];
+    const where = req.query.admin === "true" ? [] : ["active = true"];
     const values = [];
 
     if (req.query.category && req.query.category !== "all") {
@@ -20,13 +23,21 @@ router.get("/", async (req, res) => {
     }
 
     const [rows] = await pool.query(
-      `SELECT * FROM tours WHERE ${where.join(" AND ")} ORDER BY featured DESC, created_at DESC`,
+      `SELECT * FROM tours WHERE ${where.join(" AND ") || "1 = 1"} ORDER BY featured DESC, created_at DESC, id DESC`,
       values
     );
     res.json(rows.map(mapTour));
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
+});
+
+router.get("/slug/:slug", async (req, res) => {
+  try {
+    const [rows] = await pool.query("SELECT * FROM tours WHERE slug = ? AND active = true", [req.params.slug]);
+    if (!rows.length) return res.status(404).json({ message: "Tour not found" });
+    res.json(mapTour(rows[0]));
+  } catch (error) { res.status(500).json({ message: "Unable to load tour" }); }
 });
 
 router.get("/:id", async (req, res) => {
@@ -79,12 +90,29 @@ router.put("/:id", protect, adminOnly, async (req, res) => {
 });
 
 router.delete("/:id", protect, adminOnly, async (req, res) => {
+  let connection;
   try {
-    await pool.query("DELETE FROM tours WHERE id = ?", [req.params.id]);
+    connection = await pool.getConnection();
+    await connection.beginTransaction();
+    const [rows] = await connection.query("SELECT id FROM tours WHERE id = ? FOR UPDATE", [req.params.id]);
+    if (!rows.length) {
+      await connection.rollback();
+      return res.status(404).json({ message: "Tour not found" });
+    }
+    const [booked] = await connection.query(`SELECT
+      (SELECT COUNT(*) FROM bookings WHERE tour_id = ?) +
+      (SELECT COUNT(*) FROM package_bookings WHERE tour_id = ?) AS total`, [req.params.id, req.params.id]);
+    if (booked[0].total > 0) {
+      await connection.rollback();
+      return res.status(409).json({ message: "This tour has bookings and cannot be deleted. Edit it and turn off visibility to stop new bookings while preserving its history." });
+    }
+    await connection.query("DELETE FROM tours WHERE id = ?", [req.params.id]);
+    await connection.commit();
     res.json({ message: "Tour deleted" });
   } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
+    await connection?.rollback();
+    res.status(error.code === "ER_ROW_IS_REFERENCED_2" ? 409 : 500).json({ message: "Unable to delete this tour. It may have an existing booking." });
+  } finally { connection?.release(); }
 });
 
 function respondToSaveError(res, error) {

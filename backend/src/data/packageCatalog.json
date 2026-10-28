@@ -1,0 +1,481 @@
+[
+  {
+    "title": "Mirissa Whale Watching",
+    "slug": "mirissa-whale-watching",
+    "category": "experience",
+    "location": "Mirissa Harbor - Indian Ocean - Mirissa Beach",
+    "duration": "Short tour",
+    "price": 12500,
+    "maxGuests": 10,
+    "image": "/tour-images/whalwtching.png",
+    "shortDescription": "Early morning harbor check-in",
+    "description": "Early morning harbor check-in\nGuided whale watching boat trip\nReturn to Mirissa beach area",
+    "itinerary": [
+      {
+        "day": "Tour plan",
+        "title": "Short tour",
+        "activities": [
+          "Early morning harbor check-in",
+          "Guided whale watching boat trip",
+          "Return to Mirissa beach area"
+        ]
+      }
+    ]
+  },
+  {
+    "title": "Galle Fort Walk",
+    "slug": "galle-fort",
+    "category": "experience",
+    "location": "Galle Fort - Lighthouse - Dutch Streets",
+    "duration": "Short tour",
+    "price": 8500,
+    "maxGuests": 10,
+    "image": "/tour-images/Gallefort.png",
+    "shortDescription": "Fort wall and lighthouse walk",
+    "description": "Fort wall and lighthouse walk\nDutch street photo stops\nCafe and shopping time",
+    "itinerary": [
+      {
+        "day": "Tour plan",
+        "title": "Short tour",
+        "activities": [
+          "Fort wall and lighthouse walk",
+          "Dutch street photo stops",
+          "Cafe and shopping time"
+        ]
+      }
+    ]
+  },
+  {
+    "title": "Mirissa Coconut Tree Hill",
+    "slug": "coconut-tree-hill",
+    "category": "experience",
+    "location": "Mirissa Beach - Coconut Tree Hill - Secret Beach",
+    "duration": "Short tour",
+    "price": 7500,
+    "maxGuests": 10,
+    "image": "/tour-images/Cocounut%20tree.png",
+    "shortDescription": "Pickup from Mirissa area",
+    "description": "Pickup from Mirissa area\nCoconut Tree Hill photo stop\nOptional Secret Beach visit",
+    "itinerary": [
+      {
+        "day": "Tour plan",
+        "title": "Short tour",
+        "activities": [
+          "Pickup from Mirissa area",
+          "Coconut Tree Hill photo stop",
+          "Optional Secret Beach visit"
+        ]
+      }
+    ]
+  },
+  {
+    "title": "Snake Farm Visit",
+    "slug": "snake-farm",
+    "category": "experience",
+    "location": "Local Reptile Farm - Nature Stop",
+    "duration": "Short tour",
+    "price": 6500,
+    "maxGuests": 10,
+    "image": "/tour-images/bgyaala.png",
+    "shortDescription": "Guided reptile farm visit",
+    "description": "Guided reptile farm visit\nSafety briefing and local education\nReturn transfer",
+    "itinerary": [
+      {
+        "day": "Tour plan",
+        "title": "Short tour",
+        "activities": [
+          "Guided reptile farm visit",
+          "Safety briefing and local education",
+          "Return transfer"
+        ]
+      }
+    ]
+  },
+  {
+    "title": "Turtle Farm Visit",
+    "slug": "turtle-farm",
+    "category": "experience",
+    "location": "Turtle Hatchery - Beach Stop",
+    "duration": "Short tour",
+    "price": 6500,
+    "maxGuests": 10,
+    "image": "/tour-images/Mirissa%20Beach.png",
+    "shortDescription": "Visit turtle hatchery",
+    "description": "Visit turtle hatchery\nLearn about conservation work\nBeachside free time",
+    "itinerary": [
+      {
+        "day": "Tour plan",
+        "title": "Short tour",
+        "activities": [
+          "Visit turtle hatchery",
+          "Learn about conservation work",
+          "Beachside free time"
+        ]
+      }
+    ]
+  },
+  {
+    "title": "Turtle Beach",
+    "slug": "turtle-beach",
+    "category": "experience",
+    "location": "Turtle Beach - Reef Area - Beach Relaxing",
+    "duration": "Short tour",
+    "price": 7500,
+    "maxGuests": 10,
+    "image": "/tour-images/Turtle%20beach.jpeg",
+    "shortDescription": "Transfer to Turtle Beach",
+    "description": "Transfer to Turtle Beach\nRelax by the reef and beach area\nOptional sunset photo stop",
+    "itinerary": [
+      {
+        "day": "Tour plan",
+        "title": "Short tour",
+        "activities": [
+          "Transfer to Turtle Beach",
+          "Relax by the reef and beach area",
+          "Optional sunset photo stop"
+        ]
+      }
+    ]
+  },
+  {
+    "title": "Dondra Lighthouse Visit",
+    "slug": "dondra-lighthouse",
+    "category": "experience",
+    "location": "Matara - Dondra Head - Coastal Photo Stops",
+    "duration": "Short tour",
+    "price": 9000,
+    "maxGuests": 10,
+    "image": "/tour-images/Dondra%20Lighthouse.jpg",
+    "shortDescription": "Drive to Dondra Head Lighthouse",
+    "description": "Drive to Dondra Head Lighthouse\nCoastal viewpoint and photo time\nMatara beach stop before return",
+    "itinerary": [
+      {
+        "day": "Tour plan",
+        "title": "Short tour",
+        "activities": [
+          "Drive to Dondra Head Lighthouse",
+          "Coastal viewpoint and photo time",
+          "Matara beach stop before return"
+        ]
+      }
+    ]
+  },
+  {
+    "title": "Koggala Boat Safari",
+    "slug": "koggala-boat-safari",
+    "category": "experience",
+    "location": "Koggala Lake - Mangroves - Cinnamon Island",
+    "duration": "Short tour",
+    "price": 9500,
+    "maxGuests": 10,
+    "image": "/tour-images/Koggala%20boat%20Safari.jpg",
+    "shortDescription": "Boat safari through Koggala Lake",
+    "description": "Boat safari through Koggala Lake\nMangrove and bird watching\nCinnamon island village stop",
+    "itinerary": [
+      {
+        "day": "Tour plan",
+        "title": "Short tour",
+        "activities": [
+          "Boat safari through Koggala Lake",
+          "Mangrove and bird watching",
+          "Cinnamon island village stop"
+        ]
+      }
+    ]
+  },
+  {
+    "title": "Jungle Beach",
+    "slug": "jungle-beach",
+    "category": "experience",
+    "location": "Unawatuna - Jungle Beach - Coastal Viewpoint",
+    "duration": "Short tour",
+    "price": 8500,
+    "maxGuests": 10,
+    "image": "/tour-images/Jungle%20Beach%20.png",
+    "shortDescription": "Pickup from Galle or Unawatuna",
+    "description": "Pickup from Galle or Unawatuna\nRelax at Jungle Beach\nOptional coastal viewpoint stop",
+    "itinerary": [
+      {
+        "day": "Tour plan",
+        "title": "Short tour",
+        "activities": [
+          "Pickup from Galle or Unawatuna",
+          "Relax at Jungle Beach",
+          "Optional coastal viewpoint stop"
+        ]
+      }
+    ]
+  },
+  {
+    "title": "Udawalawa Safari",
+    "slug": "udawalawa-safari",
+    "category": "experience",
+    "location": "Udawalawa National Park - Elephant Transit Area",
+    "duration": "Short tour",
+    "price": 22500,
+    "maxGuests": 10,
+    "image": "/tour-images/Udawalawa%20Safari.jpg",
+    "shortDescription": "Early pickup for safari timing",
+    "description": "Early pickup for safari timing\nJeep safari through Udawalawa National Park\nOptional elephant transit area visit",
+    "itinerary": [
+      {
+        "day": "Tour plan",
+        "title": "Short tour",
+        "activities": [
+          "Early pickup for safari timing",
+          "Jeep safari through Udawalawa National Park",
+          "Optional elephant transit area visit"
+        ]
+      }
+    ]
+  },
+  {
+    "title": "Yala Safari",
+    "slug": "yala-safari",
+    "category": "day-tour",
+    "location": "Tissamaharama - Yala National Park",
+    "duration": "1 Day",
+    "price": 24500,
+    "maxGuests": 10,
+    "image": "/tour-images/bgyaala.png",
+    "shortDescription": "Early morning pickup",
+    "description": "Early morning pickup\nYala jeep safari with guide\nLunch and return transfer",
+    "itinerary": [
+      {
+        "day": "Tour plan",
+        "title": "1 day tour",
+        "activities": [
+          "Early morning pickup",
+          "Yala jeep safari with guide",
+          "Lunch and return transfer"
+        ]
+      }
+    ]
+  },
+  {
+    "title": "Ella Nine Arch Bridge",
+    "slug": "ella-nine-arch",
+    "category": "day-tour",
+    "location": "Ella - Nine Arch Bridge - Little Adam's Peak",
+    "duration": "1 Day",
+    "price": 18500,
+    "maxGuests": 10,
+    "image": "/tour-images/bgninearch.png",
+    "shortDescription": "Scenic drive to Ella",
+    "description": "Scenic drive to Ella\nNine Arch Bridge walk and photo stop\nLittle Adam's Peak viewpoint",
+    "itinerary": [
+      {
+        "day": "Tour plan",
+        "title": "1 day tour",
+        "activities": [
+          "Scenic drive to Ella",
+          "Nine Arch Bridge walk and photo stop",
+          "Little Adam's Peak viewpoint"
+        ]
+      }
+    ]
+  },
+  {
+    "title": "Matara and Dondra Day Tour",
+    "slug": "matara-dondra-day",
+    "category": "day-tour",
+    "location": "Matara Beach - Dondra Lighthouse - Weligama",
+    "duration": "1 Day",
+    "price": 16500,
+    "maxGuests": 10,
+    "image": "/tour-images/Dondra%20Lighthouse.jpg",
+    "shortDescription": "Morning Matara beach and temple stop",
+    "description": "Morning Matara beach and temple stop\nDondra Lighthouse visit and coastal photos\nWeligama sunset stop and return",
+    "itinerary": [
+      {
+        "day": "Tour plan",
+        "title": "1 day tour",
+        "activities": [
+          "Morning Matara beach and temple stop",
+          "Dondra Lighthouse visit and coastal photos",
+          "Weligama sunset stop and return"
+        ]
+      }
+    ]
+  },
+  {
+    "title": "Ella Mountain Weekend",
+    "slug": "ella-two",
+    "category": "multi-day",
+    "location": "Nuwara Eliya - Ella - Ravana Falls",
+    "duration": "2 Days",
+    "price": 39500,
+    "maxGuests": 10,
+    "image": "/tour-images/Ella.png",
+    "shortDescription": "Day 1: Tea country drive, waterfalls and Ella town",
+    "description": "Day 1: Tea country drive, waterfalls and Ella town\nDay 2: Little Adam's Peak, Nine Arch Bridge and return",
+    "itinerary": [
+      {
+        "day": "Tour plan",
+        "title": "2 day tour",
+        "activities": [
+          "Day 1: Tea country drive, waterfalls and Ella town",
+          "Day 2: Little Adam's Peak, Nine Arch Bridge and return"
+        ]
+      }
+    ]
+  },
+  {
+    "title": "Yala Safari Break",
+    "slug": "wild-two",
+    "category": "multi-day",
+    "location": "Tissamaharama - Yala - Kataragama",
+    "duration": "2 Days",
+    "price": 44000,
+    "maxGuests": 10,
+    "image": "/tour-images/Yala.png",
+    "shortDescription": "Day 1: Lagoon stop, hotel check-in and temple visit",
+    "description": "Day 1: Lagoon stop, hotel check-in and temple visit\nDay 2: Early morning jeep safari and coastal lunch",
+    "itinerary": [
+      {
+        "day": "Tour plan",
+        "title": "2 day tour",
+        "activities": [
+          "Day 1: Lagoon stop, hotel check-in and temple visit",
+          "Day 2: Early morning jeep safari and coastal lunch"
+        ]
+      }
+    ]
+  },
+  {
+    "title": "Kandy Culture Escape",
+    "slug": "kandy-two",
+    "category": "multi-day",
+    "location": "Kandy - Temple of the Tooth - Peradeniya",
+    "duration": "2 Days",
+    "price": 38500,
+    "maxGuests": 10,
+    "image": "/tour-images/Dhaladha%20maligaawa%20kandy.jpg",
+    "shortDescription": "Day 1: Kandy lake walk, Temple of the Tooth and cultural show",
+    "description": "Day 1: Kandy lake walk, Temple of the Tooth and cultural show\nDay 2: Peradeniya Botanical Garden, viewpoint stop and return",
+    "itinerary": [
+      {
+        "day": "Tour plan",
+        "title": "2 day tour",
+        "activities": [
+          "Day 1: Kandy lake walk, Temple of the Tooth and cultural show",
+          "Day 2: Peradeniya Botanical Garden, viewpoint stop and return"
+        ]
+      }
+    ]
+  },
+  {
+    "title": "Dambulla Cave and Heritage Tour",
+    "slug": "dambulla-two",
+    "category": "multi-day",
+    "location": "Dambulla - Sigiriya - Village Experience",
+    "duration": "2 Days",
+    "price": 42500,
+    "maxGuests": 10,
+    "image": "/tour-images/DambullaCurv.jpg",
+    "shortDescription": "Day 1: Dambulla Cave Temple visit and local market stop",
+    "description": "Day 1: Dambulla Cave Temple visit and local market stop\nDay 2: Sigiriya viewpoint, village lunch experience and return",
+    "itinerary": [
+      {
+        "day": "Tour plan",
+        "title": "2 day tour",
+        "activities": [
+          "Day 1: Dambulla Cave Temple visit and local market stop",
+          "Day 2: Sigiriya viewpoint, village lunch experience and return"
+        ]
+      }
+    ]
+  },
+  {
+    "title": "Classic Sri Lanka Mini Round Tour",
+    "slug": "classic-three",
+    "category": "multi-day",
+    "location": "Sigiriya - Kandy - Ella",
+    "duration": "3 Days",
+    "price": 68000,
+    "maxGuests": 10,
+    "image": "/tour-images/bgninearch.png",
+    "shortDescription": "Day 1: Sigiriya Rock and village lunch",
+    "description": "Day 1: Sigiriya Rock and village lunch\nDay 2: Kandy temple, gardens and hill-country drive\nDay 3: Ella viewpoints, waterfalls and return",
+    "itinerary": [
+      {
+        "day": "Tour plan",
+        "title": "3 day tour",
+        "activities": [
+          "Day 1: Sigiriya Rock and village lunch",
+          "Day 2: Kandy temple, gardens and hill-country drive",
+          "Day 3: Ella viewpoints, waterfalls and return"
+        ]
+      }
+    ]
+  },
+  {
+    "title": "Beach, Fort and Whale Route",
+    "slug": "beach-three",
+    "category": "multi-day",
+    "location": "Bentota - Galle - Mirissa",
+    "duration": "3 Days",
+    "price": 59000,
+    "maxGuests": 10,
+    "image": "/tour-images/bghikkaduwabeach.png",
+    "shortDescription": "Day 1: Bentota river safari and beach stay",
+    "description": "Day 1: Bentota river safari and beach stay\nDay 2: Galle Fort walk and Unawatuna swim\nDay 3: Mirissa whale watching and sunset",
+    "itinerary": [
+      {
+        "day": "Tour plan",
+        "title": "3 day tour",
+        "activities": [
+          "Day 1: Bentota river safari and beach stay",
+          "Day 2: Galle Fort walk and Unawatuna swim",
+          "Day 3: Mirissa whale watching and sunset"
+        ]
+      }
+    ]
+  },
+  {
+    "title": "South Coast Beach Explorer",
+    "slug": "south-coast-three",
+    "category": "multi-day",
+    "location": "Galle - Weligama - Matara - Dondra",
+    "duration": "3 Days",
+    "price": 56500,
+    "maxGuests": 10,
+    "image": "/tour-images/Weligamabeachsky.jpeg",
+    "shortDescription": "Day 1: Galle Fort, Jungle Beach and Unawatuna stay",
+    "description": "Day 1: Galle Fort, Jungle Beach and Unawatuna stay\nDay 2: Weligama surf bay, Turtle Beach and Mirissa sunset\nDay 3: Matara coast, Dondra Lighthouse and return",
+    "itinerary": [
+      {
+        "day": "Tour plan",
+        "title": "3 day tour",
+        "activities": [
+          "Day 1: Galle Fort, Jungle Beach and Unawatuna stay",
+          "Day 2: Weligama surf bay, Turtle Beach and Mirissa sunset",
+          "Day 3: Matara coast, Dondra Lighthouse and return"
+        ]
+      }
+    ]
+  },
+  {
+    "title": "Arugambay Surf and Coast Escape",
+    "slug": "arugambay-three",
+    "category": "multi-day",
+    "location": "Arugambay - Panama - Pottuvil Lagoon",
+    "duration": "3 Days",
+    "price": 62500,
+    "maxGuests": 10,
+    "image": "/tour-images/Arugambay.jpg",
+    "shortDescription": "Day 1: Scenic east coast drive and Arugambay beach sunset",
+    "description": "Day 1: Scenic east coast drive and Arugambay beach sunset\nDay 2: Surf time, beach cafes and Panama coastal village visit\nDay 3: Pottuvil Lagoon safari and return journey",
+    "itinerary": [
+      {
+        "day": "Tour plan",
+        "title": "3 day tour",
+        "activities": [
+          "Day 1: Scenic east coast drive and Arugambay beach sunset",
+          "Day 2: Surf time, beach cafes and Panama coastal village visit",
+          "Day 3: Pottuvil Lagoon safari and return journey"
+        ]
+      }
+    ]
+  }
+]

@@ -21,8 +21,7 @@ test("fresh setup and legacy booking migration preserve relationships and remain
     const [fresh] = await db.pool.query("SHOW COLUMNS FROM bookings");
     assert.ok(fresh.some(column => column.Field === "special_requests"));
     await db.pool.query("INSERT INTO users (id,name,email,password) VALUES (1,'Test','migration@example.invalid','test-only')");
-    await db.pool.query(`INSERT INTO tours (id,title,slug,category,location,duration,price,image,short_description,description)
-      VALUES (1,'Different tour','different-tour','day-tour','Galle','1 Day',100,'https://example.com/a.jpg','Different','Different')`);
+    await db.pool.query("UPDATE tours SET title='Different tour' WHERE id=1");
     // Only the disposable database created above is modified for this legacy fixture.
     await db.pool.query("DROP TABLE bookings");
     await db.pool.query(`CREATE TABLE trips (id INT PRIMARY KEY, title VARCHAR(255), location VARCHAR(255),

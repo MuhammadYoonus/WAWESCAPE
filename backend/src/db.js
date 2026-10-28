@@ -1,6 +1,7 @@
 import dotenv from "dotenv";
 import mysql from "mysql2/promise";
 import { migrateBookingSchema } from "./migrations/bookingSchema.js";
+import { migratePackageCatalog } from "./migrations/packageCatalog.js";
 
 dotenv.config();
 
@@ -134,6 +135,17 @@ export async function initDb() {
   await ensureColumn("package_bookings", "children", "INT NOT NULL DEFAULT 0");
   await ensureColumn("package_bookings", "infants", "INT NOT NULL DEFAULT 0");
   await ensureColumn("package_bookings", "total_amount", "DECIMAL(10, 2) NULL");
+  await migratePackageCatalog(pool);
+  await ensureColumn("package_bookings", "tour_id", "INT NULL");
+  await pool.query(`UPDATE package_bookings pb JOIN tours t
+    ON pb.package_id = t.slug OR pb.package_id = CONCAT('tour-', t.id)
+    SET pb.tour_id = t.id WHERE pb.tour_id IS NULL`);
+  const [packageKeys] = await pool.query(`SELECT COLUMN_NAME FROM information_schema.KEY_COLUMN_USAGE
+    WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'package_bookings' AND COLUMN_NAME = 'tour_id'
+      AND REFERENCED_TABLE_NAME = 'tours'`);
+  if (!packageKeys.length) {
+    await pool.query("ALTER TABLE package_bookings ADD CONSTRAINT fk_package_bookings_tour FOREIGN KEY (tour_id) REFERENCES tours(id) ON DELETE RESTRICT");
+  }
 }
 
 async function ensureColumn(table, column, definition) {

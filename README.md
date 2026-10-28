@@ -70,7 +70,11 @@ Change this password before real deployment.
 3. Click **Add Tour Package**. The tour is saved in MySQL and appears in its Short Tours, 1 Day, 2 Days or 3 Days section immediately on the next visit to Tour Packages.
 4. Use **View the published tour package** in the success message to open the correct section. Customers can use **Book Plan** to book the saved tour.
 
-Existing starter packages remain available; database tours take precedence when their slug matches a starter package ID. Featured tours also appear on the home page. For newly published tours, the booking API reads the price and guest limit from the database.
+All package listings now come from MySQL. The original 21 starter packages are imported once on first startup, retaining existing matching tours. Editing or deleting a package is not undone by restarting the application. Featured tours also appear on the home page. The booking API reads the price and guest limit from the database.
+
+## Manage tour packages
+
+The Admin dashboard lists published and hidden tours. **Edit** loads the package into the form; **Save Tour Changes** updates the same record. Turn off **Visible to customers** to stop new bookings without deleting history. **Delete** requires confirmation and is blocked when either type of booking references the tour. Unbooked tours can be permanently removed.
 
 ## Database compatibility
 

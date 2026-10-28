@@ -43,7 +43,8 @@ export function normalizeTourInput(body = {}) {
   }
   const image = requiredText(body.image, "Image URL", 2048);
   try {
-    if (!["http:", "https:"].includes(new URL(image).protocol)) throw new Error();
+    const isBundledImage = /^\/tour-images\/[^/\\]+$/.test(image) && !image.includes("..");
+    if (!isBundledImage && !["http:", "https:"].includes(new URL(image).protocol)) throw new Error();
   } catch {
     throw new TourValidationError("Enter a valid image URL starting with http:// or https://");
   }
