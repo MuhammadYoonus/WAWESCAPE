@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from "react";
+import { useEffect } from "react";
 import { Link, useLocation, useSearchParams } from "react-router-dom";
 import PageHero from "../components/PageHero";
 import FavoriteButton from "../components/FavoriteButton";
@@ -9,13 +9,14 @@ import { useTourPackages } from "../hooks/useTourPackages";
 export default function Packages() {
   const [searchParams, setSearchParams] = useSearchParams();
   const requestedDays = searchParams.get("duration");
-  const selectedDays = packageOptions.some(([value]) => value === requestedDays) ? requestedDays : "short";
-  const { packages, loading, error, refresh } = useTourPackages();
+  const selectedDays = packageOptions.some(([value]) => value === requestedDays) ? requestedDays : "all";
+  const query = searchParams.get("q") || "";
+  const sort = searchParams.get("sort") || "recommended";
+  const { packages: visiblePackages, loading, error, refresh } = useTourPackages({ query, duration: selectedDays, sort });
   const { hash } = useLocation();
-  const visiblePackages = useMemo(
-    () => packages.filter(item => String(item.days) === selectedDays),
-    [packages, selectedDays]
-  );
+  function filter(key, value) {
+    setSearchParams(previous => { const next = new URLSearchParams(previous); if (value) next.set(key, value); else next.delete(key); return next; }, { replace: true });
+  }
 
   useEffect(() => {
     if (!loading && /^#tour-\d+$/.test(hash)) {
@@ -40,11 +41,11 @@ export default function Packages() {
         <div className="card p-5">
           <p className="text-sm font-bold text-slate-600">Select tour type</p>
           <div className="mt-4 grid grid-cols-2 gap-2">
-            {packageOptions.map(([value, label]) => (
+            {[["all", "All Tours"], ...packageOptions].map(([value, label]) => (
               <button
                 key={value}
                 type="button"
-                onClick={() => setSearchParams({ duration: value })}
+                onClick={() => filter("duration", value)}
                 aria-pressed={selectedDays === value}
                 className={selectedDays === value ? "filter-active" : "filter"}
               >
@@ -55,9 +56,15 @@ export default function Packages() {
         </div>
       </div>
 
+      <div className="mt-8 grid gap-5 md:grid-cols-[1fr_260px]">
+        <label>Search tours<input type="search" maxLength={180} value={query} onChange={event => filter("q", event.target.value)} placeholder="Search by tour name, location or description" /></label>
+        <label>Sort tours<select aria-label="Sort tours" value={sort} onChange={event => filter("sort", event.target.value)}><option value="recommended">Recommended</option><option value="newest">Newest first</option><option value="price-asc">Price: low to high</option><option value="price-desc">Price: high to low</option><option value="title-asc">Name: A to Z</option></select></label>
+      </div>
+
       {loading && <p role="status" className="mt-6 text-slate-600">Loading tour packages...</p>}
       {error && <div role="alert" className="mt-6 rounded-xl border border-red-200 bg-red-50 p-4"><p className="text-red-600">{error}</p><button type="button" onClick={refresh} className="btn-outline mt-3">Try again</button></div>}
-      {!loading && !error && !visiblePackages.length && <p className="card mt-10 p-8 text-center">No tours are available for this duration yet. Please choose another tour type.</p>}
+      {!loading && !error && <p role="status" className="mt-5 text-sm text-slate-600">{visiblePackages.length} {visiblePackages.length === 1 ? "tour" : "tours"} found</p>}
+      {!loading && !error && !visiblePackages.length && <div className="card mt-6 p-8 text-center"><p>No tours match your search. Try another name or duration.</p><button type="button" onClick={() => setSearchParams({})} className="btn-outline mt-4">Clear filters</button></div>}
       <div className="mt-10 grid md:grid-cols-2 xl:grid-cols-3 gap-5">
         {visiblePackages.map(pkg => (
           <article id={pkg.id} key={pkg.id} className="card tour-card-effect scroll-mt-36">

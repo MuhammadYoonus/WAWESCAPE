@@ -76,6 +76,8 @@ All package listings now come from MySQL. The original 21 starter packages are i
 
 The Admin dashboard lists published and hidden tours. **Edit** loads the package into the form; **Save Tour Changes** updates the same record. Turn off **Visible to customers** to stop new bookings without deleting history. **Delete** requires confirmation and is blocked when either type of booking references the tour. Unbooked tours can be permanently removed.
 
+Both the public catalogue and admin list support database searches by name, location and description, duration filters, and price/name/newest sorting. The admin list also filters by visibility. Public search settings are kept in the URL so results can be revisited or shared.
+
 ## Database compatibility
 
 Startup creates the required tables and upgrades older `trips`-based booking tables without deleting their records. Referenced legacy trips are copied into separate archived tour records; their numeric IDs are never assumed to identify a current tour. New tour bookings reference `tours` and retain special requests. Re-running the seed command adds missing sample tours without clearing bookings or overwriting existing tours.

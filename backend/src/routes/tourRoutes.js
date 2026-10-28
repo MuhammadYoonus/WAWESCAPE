@@ -2,6 +2,7 @@ import express from "express";
 import { protect, adminOnly } from "../middleware/auth.js";
 import { mapTour, pool } from "../db.js";
 import { normalizeTourInput, TourValidationError } from "../utils/tourInput.js";
+import { buildTourQuery } from "../utils/tourQuery.js";
 
 const router = express.Router();
 
@@ -10,22 +11,8 @@ router.get("/", (req, res, next) => {
   next();
 }, async (req, res) => {
   try {
-    const where = req.query.admin === "true" ? [] : ["active = true"];
-    const values = [];
-
-    if (req.query.category && req.query.category !== "all") {
-      where.push("category = ?");
-      values.push(req.query.category);
-    }
-
-    if (req.query.featured === "true") {
-      where.push("featured = true");
-    }
-
-    const [rows] = await pool.query(
-      `SELECT * FROM tours WHERE ${where.join(" AND ") || "1 = 1"} ORDER BY featured DESC, created_at DESC, id DESC`,
-      values
-    );
+    const { sql, values } = buildTourQuery(req.query, req.query.admin === "true");
+    const [rows] = await pool.query(sql, values);
     res.json(rows.map(mapTour));
   } catch (error) {
     res.status(500).json({ message: error.message });

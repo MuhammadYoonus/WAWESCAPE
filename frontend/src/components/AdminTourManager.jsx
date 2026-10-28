@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import api from "../api";
 import AdminTourForm from "./AdminTourForm";
 import { formatLkr } from "../data/tourPackages";
+import { packageOptions } from "../data/tourPackages";
 
 export default function AdminTourManager() {
   const [tours, setTours] = useState([]);
@@ -11,14 +12,18 @@ export default function AdminTourManager() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
+  const [query, setQuery] = useState("");
+  const [duration, setDuration] = useState("all");
+  const [visibility, setVisibility] = useState("all");
+  const [sort, setSort] = useState("newest");
   const formRef = useRef(null);
   const load = useCallback(async () => {
     setLoading(true); setError("");
-    try { setTours((await api.get("/tours?admin=true")).data); }
+    try { setTours((await api.get("/tours", { params: { admin: true, q: query, duration, visibility, sort } })).data); }
     catch { setError("Unable to load tour packages. Please try again."); }
     finally { setLoading(false); }
-  }, []);
-  useEffect(() => { load(); }, [load]);
+  }, [query, duration, visibility, sort]);
+  useEffect(() => { const timer = setTimeout(load, 200); return () => clearTimeout(timer); }, [load]);
 
   function edit(tour) {
     setEditing(tour); setMessage(""); setError("");
@@ -40,6 +45,12 @@ export default function AdminTourManager() {
     <section className="card mt-10 p-5 md:p-8" aria-labelledby="manage-tours-title">
       <h2 id="manage-tours-title" className="text-3xl font-black">Manage tour packages</h2>
       <p className="mt-3 text-slate-600">Edit package details or hide a booked tour to preserve its booking history.</p>
+      <div className="mt-5 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+        <label>Search managed tours<input type="search" maxLength={180} placeholder="Tour name or location" value={query} onChange={event => setQuery(event.target.value)} /></label>
+        <label>Filter duration<select aria-label="Filter duration" value={duration} onChange={event => setDuration(event.target.value)}><option value="all">All durations</option>{packageOptions.map(([value,label]) => <option key={value} value={value}>{label}</option>)}</select></label>
+        <label>Filter visibility<select aria-label="Filter visibility" value={visibility} onChange={event => setVisibility(event.target.value)}><option value="all">All tours</option><option value="published">Published</option><option value="hidden">Hidden</option></select></label>
+        <label>Sort managed tours<select aria-label="Sort managed tours" value={sort} onChange={event => setSort(event.target.value)}><option value="newest">Newest first</option><option value="title-asc">Name: A to Z</option><option value="price-asc">Price: low to high</option><option value="price-desc">Price: high to low</option></select></label>
+      </div>
       {message && <p role="status" className="mt-4 rounded-xl bg-teal-50 p-4 font-semibold">{message}</p>}
       {error && <p role="alert" className="mt-4 rounded-xl bg-red-50 p-4 text-red-600">{error}</p>}
       {loading ? <p className="mt-5" role="status">Loading tour packages...</p> : <>
