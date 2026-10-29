@@ -22,7 +22,7 @@ import DaladhaMaligawa from "./Dhaladha maligaawa kandy.jpg";
 import pidurangala from "./Pidurangalarock.png";
 import arugambay from "./Arugambay.jpg";
 import liptonseat from "./Liptonseat.jpg";
-import dambullacurv from "./DambullaCurv.jpg";
+import dambullacurv from "./Dambullacurv.jpg";
 import dondraLighthouse from "./Dondra Lighthouse.jpg";
 import weligamaBeachSky from "./Weligamabeachsky.jpeg";
 import weligamaBeachWide from "./Weligam beach.png";

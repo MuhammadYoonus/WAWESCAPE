@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { mergeTourPackages, tourToPackage } from "../src/data/tourPackages.js";
+import { tourToPackage } from "../src/data/tourPackages.js";
 
 const tour = {
   _id: "42", slug: "ella-two", title: "Ella Mountain Escape", location: "Ella",
@@ -20,7 +20,7 @@ test("database tours retain a distinct booking ID, numeric price and full itiner
   assert.equal(tourToPackage({ ...tour, duration: "Short tour" }).days, "short");
 });
 
-test("saved tours override matching starter packages while preserving the others", () => {
-  const merged = mergeTourPackages([tour], [{ id: "ella-two", title: "Old title" }, { id: "galle-fort", title: "Galle" }]);
-  assert.deepEqual(merged.map(pkg => pkg.title), ["Ella Mountain Escape", "Galle"]);
+test("bundled images resolve through the API while external images are unchanged", () => {
+  assert.equal(tourToPackage(tour).image, "https://example.com/ella.jpg");
+  assert.equal(tourToPackage({ ...tour, image: "/tour-images/Ella.png" }).image, "http://localhost:5001/tour-images/Ella.png");
 });

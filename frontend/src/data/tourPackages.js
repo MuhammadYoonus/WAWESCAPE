@@ -34,9 +34,3 @@ export function tourToPackage(tour) {
     plan: plan.length ? plan : [tour.shortDescription]
   };
 }
-
-export function mergeTourPackages(tours, existingPackages) {
-  const published = tours.map(tourToPackage);
-  const publishedSlugs = new Set(tours.map(tour => tour.slug));
-  return [...published, ...existingPackages.filter(pkg => !publishedSlugs.has(pkg.id))];
-}

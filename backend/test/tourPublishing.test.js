@@ -101,7 +101,7 @@ test("publishing persists normalized fields and exposes the same tour through pu
 test("invalid tour fields are rejected before any database write", async () => {
   for (const change of [
     { title: "   " }, { location: "" }, { price: -1 }, { price: "not-a-price" },
-    { maxGuests: 1.5 }, { image: "javascript:alert(1)" }, { category: "unknown" },
+    { maxGuests: 1.5 }, { maxGuests: true }, { price: true }, { image: "javascript:alert(1)" }, { category: "unknown" },
     { itinerary: [] }, { itinerary: [{ day: "Day 1", title: "Walk", activities: [] }] }
   ]) {
     const response = await post("/tours", { ...validTour, ...change });

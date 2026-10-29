@@ -41,6 +41,7 @@ test("fresh setup and legacy booking migration preserve relationships and remain
     assert.notEqual(migrated[0].tour_id, 1);
     assert.equal(migrated[0].user_id, 1);
     assert.equal(Number(migrated[0].total_price), 246);
+    await assert.rejects(db.pool.query("DELETE FROM tours WHERE id = ?", [migrated[0].tour_id]), { code: "ER_ROW_IS_REFERENCED_2" });
     const [copied] = await db.pool.query("SELECT COUNT(*) AS n FROM tours WHERE slug='legacy-trip-1'");
     assert.equal(copied[0].n, 1);
   } finally {

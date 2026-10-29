@@ -35,11 +35,11 @@ export function normalizeTourInput(body = {}) {
   const location = requiredText(body.location, "Route or location", 180);
   const duration = requiredText(body.duration, "Duration", 80);
   const price = Number(body.price);
-  if (body.price === "" || !Number.isFinite(price) || price <= 0 || price > 99999999.99) {
+  if (!["string", "number"].includes(typeof body.price) || body.price === "" || !Number.isFinite(price) || price <= 0 || price > 99999999.99) {
     throw new TourValidationError("Price must be greater than zero and no more than LKR 99,999,999.99");
   }
   const maxGuests = Number(body.maxGuests ?? 10);
-  if (!Number.isInteger(maxGuests) || maxGuests < 1 || maxGuests > 1000) {
+  if ((body.maxGuests != null && !["string", "number"].includes(typeof body.maxGuests)) || !Number.isInteger(maxGuests) || maxGuests < 1 || maxGuests > 1000) {
     throw new TourValidationError("Guest limit must be a whole number between 1 and 1,000");
   }
   const image = requiredText(body.image, "Image URL", 2048);
