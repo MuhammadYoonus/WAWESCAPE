@@ -37,10 +37,16 @@ A full-stack web application for a local Sri Lankan travel agency. The project u
 
 ## Run
 
+Create the database once in MySQL before starting the backend:
+
+```sql
+CREATE DATABASE IF NOT EXISTS wavescape_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+```
+
 ### 1. Backend
 ```bash
 cd backend
-npm install
+npm ci
 copy .env.example .env
 npm run seed
 npm run dev
@@ -50,12 +56,14 @@ npm run dev
 Open another terminal:
 ```bash
 cd frontend
-npm install
+npm ci
 npm run dev
 ```
 
 Frontend: http://localhost:5173
 Backend: http://localhost:5001
+
+After copying `.env.example`, replace the database password and JWT secret. Leave optional SMTP/Twilio credentials empty until you intend to use real notification services. Do not commit `.env` files. The local pre-migration database backup is excluded by `.gitignore`.
 
 Seeded admin:
 - Email: admin@wavecape.lk
@@ -128,3 +136,13 @@ VITE_API_URL=http://localhost:5001/api
 - Reviews and ratings
 - Coupon system
 - PDF invoices
+
+## Project documentation
+
+- [Personalized project report - 8 pages](docs/EG_2023_5990_Project_Report.pdf)
+- [Database ERD PDF](docs/WAWESCAPE_ERD.pdf) and [Mermaid source](docs/ERD.md)
+- [Testing and verification](docs/TESTING.md)
+- [Demonstration recording guide](docs/DEMONSTRATION_GUIDE.md)
+- [Interface screenshots](docs/screenshots/)
+
+The report cover identifies **MBM Yoonus, EG/2023/5990**. To rebuild it, install `docs/requirements-report.txt`, make Poppler's `pdftoppm` available, and run `python docs/build_report.py`. The report generator checks the ten-page limit. A camera-on demonstration recording must still be made by the student; it is not included in this repository.
