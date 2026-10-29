@@ -30,7 +30,7 @@ export default function Home() {
             <p className="mt-6 text-lg md:text-xl text-slate-200 max-w-2xl">From whale watching in Mirissa to mountain journeys in Ella, discover authentic island experiences with WAWECAPE.</p>
             <div className="mt-8 flex flex-wrap gap-4">
               <Link to="/packages" className="btn-primary text-base">Explore Packages</Link>
-              <Link to="/packages" className="btn-white text-base">View Packages</Link>
+              <Link to="/destinations" className="btn-white text-base">Explore Destinations</Link>
             </div>
           </div>
         </div>
