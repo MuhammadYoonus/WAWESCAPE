@@ -137,12 +137,3 @@ VITE_API_URL=http://localhost:5001/api
 - Coupon system
 - PDF invoices
 
-## Project documentation
-
-- [Personalized project report - 8 pages](docs/EG_2023_5990_Project_Report.pdf)
-- [Database ERD PDF](docs/WAWESCAPE_ERD.pdf) and [Mermaid source](docs/ERD.md)
-- [Testing and verification](docs/TESTING.md)
-- [Demonstration recording guide](docs/DEMONSTRATION_GUIDE.md)
-- [Interface screenshots](docs/screenshots/)
-
-The report cover identifies **MBM Yoonus, EG/2023/5990**. To rebuild it, install `docs/requirements-report.txt`, make Poppler's `pdftoppm` available, and run `python docs/build_report.py`. The report generator checks the ten-page limit. A camera-on demonstration recording must still be made by the student; it is not included in this repository.
